@@ -86,6 +86,10 @@ dependencies {
     implementation(libs.jsoup)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
     testImplementation(libs.junit)
     testImplementation(libs.org.json)
     androidTestImplementation(libs.androidx.test.ext.junit)

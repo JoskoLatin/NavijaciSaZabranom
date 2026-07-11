@@ -1,0 +1,7 @@
+package com.navijacisazabranom.app.data.hns
+
+data class PraceniKlub(
+    val natjecanjeId: String,
+    val klubId: String,
+    val klubNaziv: String,
+)

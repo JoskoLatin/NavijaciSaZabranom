@@ -31,7 +31,7 @@ private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 @Composable
 fun RasporedScreen(viewModel: RasporedViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-    RasporedContent(uiState = uiState, onRetry = viewModel::loadMatches)
+    RasporedContent(uiState = uiState, onRetry = viewModel::osvjeziUtakmice)
 }
 
 @Composable
@@ -43,32 +43,33 @@ private fun RasporedContent(uiState: RasporedUiState, onRetry: () -> Unit) {
     ) {
         Text(text = stringResource(R.string.raspored_title), style = MaterialTheme.typography.headlineSmall)
 
-        when (uiState) {
-            is RasporedUiState.Loading -> CenteredBox { CircularProgressIndicator() }
-            is RasporedUiState.Error -> CenteredBox {
+        uiState.greska?.let { greska ->
+            Text(
+                text = greska,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+
+        when {
+            uiState.ucitavanje && uiState.utakmice.isEmpty() -> CenteredBox { CircularProgressIndicator() }
+            uiState.utakmice.isEmpty() -> CenteredBox {
                 Text(
-                    text = uiState.message,
-                    textAlign = TextAlign.Center,
+                    text = stringResource(R.string.raspored_empty),
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
-                Button(onClick = onRetry) {
-                    Text(text = stringResource(R.string.action_retry))
+                if (uiState.greska != null) {
+                    Button(onClick = onRetry) {
+                        Text(text = stringResource(R.string.action_retry))
+                    }
                 }
             }
-            is RasporedUiState.Success -> {
-                if (uiState.utakmice.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.raspored_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 16.dp),
-                    )
-                } else {
-                    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-                        items(uiState.utakmice, key = { it.id }) { utakmica ->
-                            UtakmicaRow(utakmica)
-                            Divider()
-                        }
-                    }
+            else -> LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
+                items(uiState.utakmice, key = { it.id }) { utakmica ->
+                    UtakmicaRow(utakmica)
+                    Divider()
                 }
             }
         }
@@ -97,6 +98,6 @@ private fun UtakmicaRow(utakmica: Utakmica) {
 @Composable
 private fun RasporedScreenPreview() {
     NavijaciTheme {
-        RasporedContent(uiState = RasporedUiState.Loading, onRetry = {})
+        RasporedContent(uiState = RasporedUiState(ucitavanje = true), onRetry = {})
     }
 }

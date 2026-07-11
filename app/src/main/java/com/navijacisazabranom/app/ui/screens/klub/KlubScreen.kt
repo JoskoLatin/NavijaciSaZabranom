@@ -39,7 +39,10 @@ fun KlubScreen(onKlubSelected: (String) -> Unit, viewModel: KlubViewModel = hilt
         uiState = uiState,
         query = query,
         onQueryChange = { query = it },
-        onKlubSelected = onKlubSelected,
+        onKlubSelected = { klub ->
+            viewModel.odaberiKlub(klub)
+            onKlubSelected(klub.id)
+        },
         onRetry = viewModel::ucitajKlubove,
     )
 }
@@ -49,7 +52,7 @@ private fun KlubContent(
     uiState: KlubUiState,
     query: String,
     onQueryChange: (String) -> Unit,
-    onKlubSelected: (String) -> Unit,
+    onKlubSelected: (Klub) -> Unit,
     onRetry: () -> Unit,
 ) {
     Column(
@@ -91,7 +94,7 @@ private fun KlubContent(
                             headlineContent = { Text(text = klub.naziv) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onKlubSelected(klub.id) },
+                                .clickable { onKlubSelected(klub) },
                         )
                     }
                 }

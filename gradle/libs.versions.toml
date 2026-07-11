@@ -16,6 +16,7 @@ coroutinesPlayServices = "1.7.3"
 jsoup = "1.17.2"
 desugarJdkLibs = "2.0.4"
 orgJson = "20240303"
+room = "2.6.1"
 junit = "4.13.2"
 androidxTestExt = "1.1.5"
 espresso = "3.5.1"
@@ -44,6 +45,9 @@ kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "ko
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 org-json = { group = "org.json", name = "json", version.ref = "orgJson" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }

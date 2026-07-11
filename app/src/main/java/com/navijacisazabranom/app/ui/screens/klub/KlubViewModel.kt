@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.Klub
 import com.navijacisazabranom.app.data.hns.NatjecanjeRepository
+import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
 import com.navijacisazabranom.app.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,6 +27,7 @@ sealed interface KlubUiState {
 @HiltViewModel
 class KlubViewModel @Inject constructor(
     private val natjecanjeRepository: NatjecanjeRepository,
+    private val praceniKlubRepository: PraceniKlubRepository,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -48,6 +50,12 @@ class KlubViewModel @Inject constructor(
                     Log.e(TAG, "Dohvat klubova neuspješan", e)
                     _uiState.value = KlubUiState.Error(context.getString(R.string.klub_error_generic))
                 }
+        }
+    }
+
+    fun odaberiKlub(klub: Klub) {
+        viewModelScope.launch {
+            praceniKlubRepository.postaviPraceniKlub(natjecanjeId, klub.id, klub.naziv)
         }
     }
 
