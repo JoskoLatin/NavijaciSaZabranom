@@ -5,6 +5,7 @@
     <string name="login_title">Prijava</string>
     <string name="login_subtitle">Prijavite se kako biste pratili raspored svog kluba i primali podsjetnike za javljanje policiji na dan utakmice.</string>
     <string name="login_google_button">Prijava Google računom</string>
+    <string name="login_error_generic">Prijava nije uspjela. Pokušajte ponovno.</string>
 
     <string name="rang_title">Odaberite rang natjecanja</string>
     <string name="rang_supersport_hnl">SuperSport HNL</string>

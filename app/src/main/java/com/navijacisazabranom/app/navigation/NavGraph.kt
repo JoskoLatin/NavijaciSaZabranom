@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.navijacisazabranom.app.ui.screens.klub.KlubScreen
 import com.navijacisazabranom.app.ui.screens.login.LoginScreen
 import com.navijacisazabranom.app.ui.screens.rang.RangScreen
@@ -12,7 +14,8 @@ import com.navijacisazabranom.app.ui.screens.raspored.RasporedScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = Screen.Login.route) {
+    val startDestination = if (Firebase.auth.currentUser != null) Screen.Rang.route else Screen.Login.route
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoggedIn = {
