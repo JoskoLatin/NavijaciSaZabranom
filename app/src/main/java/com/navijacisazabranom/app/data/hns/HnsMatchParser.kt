@@ -1,4 +1,4 @@
-package com.navijacisazabranom.app.data.matches
+package com.navijacisazabranom.app.data.hns
 
 import android.util.Log
 import org.jsoup.nodes.Document
@@ -11,19 +11,29 @@ import java.time.LocalTime
  * markup i unutar manjih po-klupskih "Utakmice" widgeta (isti data-match ID
  * kao u glavnom rasporedu). Selektor se zato oslanja na
  * div.competition_results_scorers_cards, jedini kontejner cjelovitog
- * sezonskog rasporeda, uz distinctBy(id) kao dodatnu zaštitu.
+ * sezonskog rasporeda, uz distinctBy(id) kao dodatnu zaštitu. Provjereno i na
+ * nižem rangu (županijska liga) - ista klopka i isti markup se ponavljaju.
  */
 object HnsMatchParser {
 
     private const val TAG = "HnsMatchParser"
     private val DATE_REGEX = Regex("""(\d{2})\.(\d{2})\.(\d{4})\.\s*(\d{2}:\d{2})?""")
 
-    fun parse(document: Document): List<Utakmica> {
+    fun parseUtakmice(document: Document): List<Utakmica> {
         val rows = document.select("div.competition_results_scorers_cards li.row[data-match]")
         return rows.mapNotNull { row ->
             runCatching { parseRow(row) }
                 .onFailure { Log.w(TAG, "Preskačem redak koji se ne može parsirati: ${it.message}") }
                 .getOrNull()
+        }.distinctBy { it.id }
+    }
+
+    fun parseKlubovi(document: Document): List<Klub> {
+        val items = document.select("div.clubs_in_competition ul.club_list_inner li[data-id]")
+        return items.mapNotNull { li ->
+            val id = li.attr("data-id")
+            val naziv = li.selectFirst("div.title h3")?.text().orEmpty()
+            if (naziv.isBlank()) null else Klub(id, naziv)
         }.distinctBy { it.id }
     }
 

@@ -7,15 +7,15 @@
     <string name="login_google_button">Prijava Google računom</string>
     <string name="login_error_generic">Prijava nije uspjela. Pokušajte ponovno.</string>
 
-    <string name="rang_title">Odaberite rang natjecanja</string>
-    <string name="rang_supersport_hnl">SuperSport HNL</string>
-    <string name="rang_prva_nl">Prva NL</string>
-    <string name="rang_druga_nl">Druga NL</string>
-    <string name="rang_zupanijska_liga">Županijska liga</string>
+    <string name="rang_title">Odaberite natjecanje</string>
+    <string name="rang_savez_label">Savez</string>
+    <string name="rang_nema_natjecanja">Nema natjecanja za odabrani savez.</string>
+    <string name="rang_error_generic">Učitavanje saveza nije uspjelo. Provjerite internetsku vezu.</string>
     <string name="action_next">Dalje</string>
 
     <string name="klub_title">Odaberite klub</string>
     <string name="klub_search_placeholder">Pretraži klubove</string>
+    <string name="klub_error_generic">Učitavanje klubova nije uspjelo. Provjerite internetsku vezu.</string>
 
     <string name="raspored_title">Raspored</string>
     <string name="raspored_empty">Nema pronađenih utakmica.</string>

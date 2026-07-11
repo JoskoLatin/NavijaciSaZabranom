@@ -1,4 +1,4 @@
-package com.navijacisazabranom.app.data.matches
+package com.navijacisazabranom.app.data.hns
 
 import org.jsoup.Jsoup
 import org.junit.Assert.assertEquals
@@ -14,7 +14,7 @@ class HnsMatchParserTest {
     @Test
     fun `parses full season without duplicates from per-club widgets`() {
         val document = loadFixture("hnl-2026-27.html")
-        val utakmice = HnsMatchParser.parse(document)
+        val utakmice = HnsMatchParser.parseUtakmice(document)
 
         println("Ukupno utakmica (2026-27): ${utakmice.size}")
         println("Raspon kola: ${utakmice.minOf { it.kolo }}..${utakmice.maxOf { it.kolo }}")
@@ -27,7 +27,7 @@ class HnsMatchParserTest {
     @Test
     fun `season not yet started has no published kickoff times`() {
         val document = loadFixture("hnl-2026-27.html")
-        val utakmice = HnsMatchParser.parse(document)
+        val utakmice = HnsMatchParser.parseUtakmice(document)
 
         assertTrue("2026-27 satnice još nisu objavljene (TBD)", utakmice.all { it.vrijeme == null })
         assertTrue("Neodigrane utakmice nemaju rezultat", utakmice.all { it.rezultatDomacin == null && it.rezultatGost == null })
@@ -36,7 +36,7 @@ class HnsMatchParserTest {
     @Test
     fun `filters Hajduk matches correctly from 2026-27 season`() {
         val document = loadFixture("hnl-2026-27.html")
-        val utakmice = HnsMatchParser.parse(document).filter { it.domacinId == HAJDUK_ID || it.gostId == HAJDUK_ID }
+        val utakmice = HnsMatchParser.parseUtakmice(document).filter { it.domacinId == HAJDUK_ID || it.gostId == HAJDUK_ID }
 
         println("Hajduk utakmica (2026-27): ${utakmice.size}")
         utakmice.take(3).forEach {
@@ -51,7 +51,7 @@ class HnsMatchParserTest {
     @Test
     fun `parses played matches and kickoff times from finished 2025-26 season`() {
         val document = loadFixture("hnl-2025-26.html")
-        val utakmice = HnsMatchParser.parse(document)
+        val utakmice = HnsMatchParser.parseUtakmice(document)
         val odigrane = utakmice.filter { it.rezultatDomacin != null }
 
         println("Ukupno utakmica (2025-26): ${utakmice.size}, odigranih: ${odigrane.size}")
@@ -59,6 +59,39 @@ class HnsMatchParserTest {
         assertTrue("Odigrana sezona mora imati utakmice s rezultatom", odigrane.isNotEmpty())
         assertTrue("Odigrana sezona mora imati objavljene satnice", utakmice.any { it.vrijeme != null })
         assertTrue("Odigrane utakmice moraju imati oba rezultata", odigrane.all { it.rezultatDomacin != null && it.rezultatGost != null })
+    }
+
+    @Test
+    fun `parses club list for HNL competition`() {
+        val document = loadFixture("hnl-2026-27.html")
+        val klubovi = HnsMatchParser.parseKlubovi(document)
+
+        println("Klubovi u HNL-u (2026-27): ${klubovi.size}")
+
+        assertTrue("Mora postojati barem jedan klub", klubovi.isNotEmpty())
+        assertTrue("Hajduk mora biti u popisu klubova", klubovi.any { it.id == HAJDUK_ID && it.naziv.contains("Hajduk") })
+        assertEquals("Ne smije biti duplikata klubova", klubovi.size, klubovi.distinctBy { it.id }.size)
+    }
+
+    @Test
+    fun `generalizes to a lower-tier county league page with published kickoff times`() {
+        val document = loadFixture("znl-2026-27.html")
+        val utakmice = HnsMatchParser.parseUtakmice(document)
+        val klubovi = HnsMatchParser.parseKlubovi(document)
+
+        println("Županijska liga - utakmica: ${utakmice.size}, klubova: ${klubovi.size}")
+
+        assertTrue("Raspored ne smije biti prazan", utakmice.isNotEmpty())
+        assertTrue("Popis klubova ne smije biti prazan", klubovi.isNotEmpty())
+        assertTrue(
+            "Županijska liga već ima objavljene satnice (za razliku od HNL-a)",
+            utakmice.any { it.vrijeme != null },
+        )
+        assertEquals(
+            "Ne smije biti duplikata iz scoreboard_first_line widgeta",
+            utakmice.size,
+            utakmice.distinctBy { it.id }.size,
+        )
     }
 
     private companion object {

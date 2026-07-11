@@ -1,4 +1,4 @@
-package com.navijacisazabranom.app.data.matches
+package com.navijacisazabranom.app.data.hns
 
 import java.time.LocalDate
 import java.time.LocalTime

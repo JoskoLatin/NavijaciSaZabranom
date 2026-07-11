@@ -6,8 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navijacisazabranom.app.R
-import com.navijacisazabranom.app.data.matches.MatchRepository
-import com.navijacisazabranom.app.data.matches.Utakmica
+import com.navijacisazabranom.app.data.hns.NatjecanjeRepository
+import com.navijacisazabranom.app.data.hns.Utakmica
 import com.navijacisazabranom.app.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,11 +25,12 @@ sealed interface RasporedUiState {
 
 @HiltViewModel
 class RasporedViewModel @Inject constructor(
-    private val matchRepository: MatchRepository,
+    private val natjecanjeRepository: NatjecanjeRepository,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
+    private val natjecanjeId: String = checkNotNull(savedStateHandle[Screen.Raspored.ARG_NATJECANJE_ID])
     private val klubId: String = checkNotNull(savedStateHandle[Screen.Raspored.ARG_KLUB_ID])
 
     private val _uiState = MutableStateFlow<RasporedUiState>(RasporedUiState.Loading)
@@ -42,8 +43,13 @@ class RasporedViewModel @Inject constructor(
     fun loadMatches() {
         _uiState.value = RasporedUiState.Loading
         viewModelScope.launch {
-            matchRepository.getMatchesForClub(klubId)
-                .onSuccess { _uiState.value = RasporedUiState.Success(it) }
+            natjecanjeRepository.getNatjecanjeStranica(natjecanjeId)
+                .onSuccess { stranica ->
+                    val utakmiceKluba = stranica.utakmice
+                        .filter { it.domacinId == klubId || it.gostId == klubId }
+                        .sortedBy { it.datum }
+                    _uiState.value = RasporedUiState.Success(utakmiceKluba)
+                }
                 .onFailure { e ->
                     Log.e(TAG, "Dohvat rasporeda neuspješan", e)
                     _uiState.value = RasporedUiState.Error(context.getString(R.string.raspored_error_generic))

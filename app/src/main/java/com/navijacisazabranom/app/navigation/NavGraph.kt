@@ -27,17 +27,16 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable(Screen.Rang.route) {
             RangScreen(
-                onRangSelected = { rangId ->
-                    navController.navigate(Screen.Klub.createRoute(rangId))
+                onNatjecanjeSelected = { natjecanjeId ->
+                    navController.navigate(Screen.Klub.createRoute(natjecanjeId))
                 },
             )
         }
         composable(Screen.Klub.route) { backStackEntry ->
-            val rangId = backStackEntry.arguments?.getString(Screen.Klub.ARG_RANG_ID).orEmpty()
+            val natjecanjeId = backStackEntry.arguments?.getString(Screen.Klub.ARG_NATJECANJE_ID).orEmpty()
             KlubScreen(
-                rangId = rangId,
                 onKlubSelected = { klubId ->
-                    navController.navigate(Screen.Raspored.createRoute(klubId))
+                    navController.navigate(Screen.Raspored.createRoute(natjecanjeId, klubId))
                 },
             )
         }
