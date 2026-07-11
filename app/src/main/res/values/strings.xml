@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Navijači sa zabranom</string>
+
+    <string name="login_title">Prijava</string>
+    <string name="login_subtitle">Prijavite se kako biste pratili raspored svog kluba i primali podsjetnike za javljanje policiji na dan utakmice.</string>
+    <string name="login_google_button">Prijava Google računom</string>
+
+    <string name="rang_title">Odaberite rang natjecanja</string>
+    <string name="rang_supersport_hnl">SuperSport HNL</string>
+    <string name="rang_prva_nl">Prva NL</string>
+    <string name="rang_druga_nl">Druga NL</string>
+    <string name="rang_zupanijska_liga">Županijska liga</string>
+    <string name="action_next">Dalje</string>
+
+    <string name="klub_title">Odaberite klub</string>
+    <string name="klub_search_placeholder">Pretraži klubove</string>
+
+    <string name="raspored_title">Raspored</string>
+    <string name="raspored_empty">Raspored još nije učitan.</string>
+</resources>
