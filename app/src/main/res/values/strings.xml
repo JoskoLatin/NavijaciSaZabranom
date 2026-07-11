@@ -18,5 +18,8 @@
     <string name="klub_search_placeholder">Pretraži klubove</string>
 
     <string name="raspored_title">Raspored</string>
-    <string name="raspored_empty">Raspored još nije učitan.</string>
+    <string name="raspored_empty">Nema pronađenih utakmica.</string>
+    <string name="raspored_error_generic">Preuzimanje rasporeda nije uspjelo. Provjerite internetsku vezu.</string>
+    <string name="raspored_satnica_tbd">satnica nepoznata</string>
+    <string name="action_retry">Pokušaj ponovno</string>
 </resources>

@@ -41,9 +41,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                 },
             )
         }
-        composable(Screen.Raspored.route) { backStackEntry ->
-            val klubId = backStackEntry.arguments?.getString(Screen.Raspored.ARG_KLUB_ID).orEmpty()
-            RasporedScreen(klubId = klubId)
+        composable(Screen.Raspored.route) {
+            RasporedScreen()
         }
     }
 }
