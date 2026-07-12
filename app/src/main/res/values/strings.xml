@@ -6,6 +6,41 @@
     <string name="login_subtitle">Prijavite se kako biste pratili raspored svog kluba i primali podsjetnike za javljanje policiji na dan utakmice.</string>
     <string name="login_google_button">Prijava Google računom</string>
     <string name="login_error_generic">Prijava nije uspjela. Pokušajte ponovno.</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_lozinka_label">Lozinka</string>
+    <string name="login_prijava_button">Prijavite se</string>
+    <string name="login_ili">ili</string>
+    <string name="login_registracija_link">Nemate račun? Registrirajte se</string>
+    <string name="login_zaboravljena_lozinka">Zaboravili ste lozinku?</string>
+
+    <string name="reset_dialog_naslov">Ponovno postavljanje lozinke</string>
+    <string name="reset_dialog_tekst">Unesite email adresu računa i poslat ćemo vam poveznicu za postavljanje nove lozinke.</string>
+    <string name="reset_poslan">Ako račun postoji, email s uputama je poslan.</string>
+    <string name="action_posalji">Pošalji</string>
+    <string name="action_odustani">Odustani</string>
+
+    <string name="registracija_title">Registracija</string>
+    <string name="registracija_subtitle">Stvorite račun email adresom i lozinkom. Nakon registracije poslat ćemo vam poveznicu za potvrdu.</string>
+    <string name="registracija_potvrda_lozinke_label">Ponovite lozinku</string>
+    <string name="registracija_button">Registrirajte se</string>
+    <string name="registracija_natrag">Natrag na prijavu</string>
+
+    <string name="potvrdi_email_title">Potvrdite email</string>
+    <string name="potvrdi_email_tekst">Poslali smo poveznicu za potvrdu na %1$s. Otvorite email, potvrdite račun pa se vratite ovdje.</string>
+    <string name="potvrdi_email_provjerio">Potvrdio sam — nastavi</string>
+    <string name="potvrdi_email_nije_potvrdjen">Email još nije potvrđen. Provjerite pristiglu i neželjenu poštu.</string>
+    <string name="potvrdi_email_ponovno">Pošalji ponovno</string>
+    <string name="potvrdi_email_poslan_ponovno">Email za potvrdu je ponovno poslan.</string>
+    <string name="action_odjava">Odjava</string>
+
+    <string name="auth_error_krivi_podaci">Pogrešan email ili lozinka.</string>
+    <string name="auth_error_email_zauzet">Račun s tom email adresom već postoji.</string>
+    <string name="auth_error_slaba_lozinka">Lozinka mora imati barem 6 znakova.</string>
+    <string name="auth_error_previse_pokusaja">Previše pokušaja. Pokušajte ponovno kasnije.</string>
+    <string name="auth_error_mreza">Provjerite internetsku vezu.</string>
+    <string name="auth_error_generic">Nešto je pošlo po zlu. Pokušajte ponovno.</string>
+    <string name="validacija_email">Unesite ispravnu email adresu.</string>
+    <string name="validacija_lozinke_razlicite">Lozinke se ne podudaraju.</string>
 
     <string name="rang_title">Odaberite natjecanje</string>
     <string name="rang_savez_label">Savez</string>
