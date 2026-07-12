@@ -15,6 +15,12 @@ interface UtakmicaDao {
     )
     fun observeZaKlub(natjecanjeId: String, klubId: String): Flow<List<UtakmicaEntity>>
 
+    @Query(
+        "SELECT * FROM utakmica WHERE natjecanjeId = :natjecanjeId " +
+            "AND (domacinId = :klubId OR gostId = :klubId) ORDER BY datum",
+    )
+    suspend fun getZaKlub(natjecanjeId: String, klubId: String): List<UtakmicaEntity>
+
     @Query("DELETE FROM utakmica WHERE natjecanjeId = :natjecanjeId")
     suspend fun obrisiZaNatjecanje(natjecanjeId: String)
 

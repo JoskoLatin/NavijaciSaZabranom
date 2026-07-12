@@ -3,13 +3,18 @@ package com.navijacisazabranom.app.data.hns
 import com.navijacisazabranom.app.data.hns.local.NavijaciDatabase
 import com.navijacisazabranom.app.data.hns.local.PraceniKlubEntity
 import com.navijacisazabranom.app.data.hns.local.UtakmicaEntity
+import com.navijacisazabranom.app.data.postavke.PostavkeRepository
+import com.navijacisazabranom.app.notifikacije.AlarmScheduler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 class RoomPraceniKlubRepository @Inject constructor(
     private val database: NavijaciDatabase,
     private val natjecanjeRepository: NatjecanjeRepository,
+    private val alarmScheduler: AlarmScheduler,
+    private val postavkeRepository: PostavkeRepository,
 ) : PraceniKlubRepository {
 
     override fun observePraceniKlub(): Flow<PraceniKlub?> =
@@ -33,7 +38,30 @@ class RoomPraceniKlubRepository @Inject constructor(
                 natjecanjeId,
                 stranica.utakmice.map { it.toEntity(natjecanjeId) },
             )
+            zakaziNotifikacijeAkoPraceni(natjecanjeId)
         }
+
+    override suspend fun ponovnoZakaziNotifikacije() {
+        val praceniKlub = database.praceniKlubDao().get() ?: return
+        zakaziNotifikacijeAkoPraceni(praceniKlub.natjecanjeId)
+    }
+
+    private suspend fun zakaziNotifikacijeAkoPraceni(natjecanjeId: String) {
+        val praceniKlub = database.praceniKlubDao().get() ?: return
+        if (praceniKlub.natjecanjeId != natjecanjeId) return
+
+        val danas = LocalDate.now()
+        val sljedeca = database.utakmicaDao().getZaKlub(natjecanjeId, praceniKlub.klubId)
+            .filter { it.datum >= danas }
+            .minByOrNull { it.datum }
+            ?.toDomain()
+
+        alarmScheduler.zakaziZaSljedecuUtakmicu(
+            klubNaziv = praceniKlub.klubNaziv,
+            sljedeca = sljedeca,
+            vecernjiPodsjetnik = postavkeRepository.getVecernjiPodsjetnik(),
+        )
+    }
 
     private fun PraceniKlubEntity.toDomain() = PraceniKlub(natjecanjeId, klubId, klubNaziv)
 

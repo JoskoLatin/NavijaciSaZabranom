@@ -10,4 +10,7 @@ interface PraceniKlubRepository {
 
     /** Dohvaća natjecanje s mreže i zamjenjuje cache za taj natjecanjeId. */
     suspend fun osvjeziUtakmice(natjecanjeId: String): Result<Unit>
+
+    /** Ponovno zakazuje notifikacije iz cachea, bez mreže — npr. nakon promjene postavki. */
+    suspend fun ponovnoZakaziNotifikacije()
 }

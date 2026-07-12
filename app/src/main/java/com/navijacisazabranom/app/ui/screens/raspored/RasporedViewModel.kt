@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
 import com.navijacisazabranom.app.data.hns.Utakmica
+import com.navijacisazabranom.app.data.postavke.PostavkeRepository
 import com.navijacisazabranom.app.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -23,11 +24,13 @@ data class RasporedUiState(
     val utakmice: List<Utakmica> = emptyList(),
     val ucitavanje: Boolean = true,
     val greska: String? = null,
+    val vecernjiPodsjetnik: Boolean = false,
 )
 
 @HiltViewModel
 class RasporedViewModel @Inject constructor(
     private val praceniKlubRepository: PraceniKlubRepository,
+    private val postavkeRepository: PostavkeRepository,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -42,8 +45,14 @@ class RasporedViewModel @Inject constructor(
         praceniKlubRepository.observeUtakmice(natjecanjeId, klubId),
         ucitavanje,
         greska,
-    ) { utakmice, ucitavanje, greska ->
-        RasporedUiState(utakmice = utakmice, ucitavanje = ucitavanje, greska = greska)
+        postavkeRepository.observeVecernjiPodsjetnik(),
+    ) { utakmice, ucitavanje, greska, vecernjiPodsjetnik ->
+        RasporedUiState(
+            utakmice = utakmice,
+            ucitavanje = ucitavanje,
+            greska = greska,
+            vecernjiPodsjetnik = vecernjiPodsjetnik,
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RasporedUiState())
 
     init {
@@ -60,6 +69,13 @@ class RasporedViewModel @Inject constructor(
                     greska.value = context.getString(R.string.raspored_error_generic)
                 }
             ucitavanje.value = false
+        }
+    }
+
+    fun postaviVecernjiPodsjetnik(ukljucen: Boolean) {
+        viewModelScope.launch {
+            postavkeRepository.postaviVecernjiPodsjetnik(ukljucen)
+            praceniKlubRepository.ponovnoZakaziNotifikacije()
         }
     }
 
