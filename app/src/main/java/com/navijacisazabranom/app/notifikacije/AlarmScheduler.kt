@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.Utakmica
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -55,11 +56,19 @@ class AlarmScheduler @Inject constructor(
         val trigerMillis = vrijemeAlarma.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         if (trigerMillis <= System.currentTimeMillis()) return
 
-        alarmManager?.setAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            trigerMillis,
-            pendingIntent(requestCode, naslov, tekst),
-        )
+        val alarmManager = alarmManager ?: return
+        val intent = pendingIntent(requestCode, naslov, tekst)
+
+        // USE_EXACT_ALARM (API 33+) se dodjeljuje automatski; na API 31-32
+        // SCHEDULE_EXACT_ALARM korisnik/sustav moze opozvati, pa provjeravamo.
+        val smijeTocno = Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+            alarmManager.canScheduleExactAlarms()
+
+        if (smijeTocno) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, trigerMillis, intent)
+        } else {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, trigerMillis, intent)
+        }
     }
 
     private fun pendingIntent(requestCode: Int, naslov: String, tekst: String): PendingIntent {

@@ -5,6 +5,19 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Precizni alarmi: USE_EXACT_ALARM (API 33+) se dodjeljuje automatski
+         aplikacijama kojima je podsjetnik temeljna funkcija; SCHEDULE_EXACT_ALARM
+         pokriva API 31-32 gdje USE_EXACT_ALARM ne postoji. -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Provjera postoji li MIUI ekran za autostart (package visibility, API 30+). -->
+    <queries>
+        <package android:name="com.miui.securitycenter" />
+    </queries>
 
     <application
         android:name=".NavijaciApplication"
@@ -35,6 +48,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 

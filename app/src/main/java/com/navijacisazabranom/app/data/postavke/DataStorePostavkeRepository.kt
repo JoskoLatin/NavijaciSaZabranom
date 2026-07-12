@@ -26,7 +26,15 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[VECERNJI_PODSJETNIK] = ukljucen }
     }
 
+    override fun observeKarticaPouzdanostiOdbacena(): Flow<Boolean> =
+        context.postavkeDataStore.data.map { it[KARTICA_POUZDANOSTI_ODBACENA] ?: false }
+
+    override suspend fun odbaciKarticuPouzdanosti() {
+        context.postavkeDataStore.edit { it[KARTICA_POUZDANOSTI_ODBACENA] = true }
+    }
+
     private companion object {
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
+        val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
     }
 }

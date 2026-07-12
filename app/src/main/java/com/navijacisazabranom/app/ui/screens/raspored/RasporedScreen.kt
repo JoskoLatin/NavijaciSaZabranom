@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,11 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +36,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.Utakmica
+import com.navijacisazabranom.app.notifikacije.PouzdanostPomocnik
 import com.navijacisazabranom.app.ui.components.CenteredBox
 import com.navijacisazabranom.app.ui.theme.NavijaciTheme
 import java.time.format.DateTimeFormatter
@@ -59,6 +63,7 @@ fun RasporedScreen(viewModel: RasporedViewModel = hiltViewModel()) {
         uiState = uiState,
         onRetry = viewModel::osvjeziUtakmice,
         onVecernjiPodsjetnik = viewModel::postaviVecernjiPodsjetnik,
+        onOdbaciKarticu = viewModel::odbaciKarticuPouzdanosti,
     )
 }
 
@@ -67,6 +72,7 @@ private fun RasporedContent(
     uiState: RasporedUiState,
     onRetry: () -> Unit,
     onVecernjiPodsjetnik: (Boolean) -> Unit,
+    onOdbaciKarticu: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -89,6 +95,14 @@ private fun RasporedContent(
             Switch(
                 checked = uiState.vecernjiPodsjetnik,
                 onCheckedChange = onVecernjiPodsjetnik,
+            )
+        }
+
+        if (uiState.prikaziKarticuPouzdanosti) {
+            PouzdanostCard(
+                prikaziBaterija = uiState.prikaziGumbBaterija,
+                prikaziAutostart = uiState.prikaziGumbAutostart,
+                onOdbaci = onOdbaciKarticu,
             )
         }
 
@@ -126,6 +140,56 @@ private fun RasporedContent(
 }
 
 @Composable
+private fun PouzdanostCard(
+    prikaziBaterija: Boolean,
+    prikaziAutostart: Boolean,
+    onOdbaci: () -> Unit,
+) {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.pouzdanost_naslov),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Text(
+                text = stringResource(R.string.pouzdanost_tekst),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            Row(
+                modifier = Modifier.padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (prikaziBaterija) {
+                    Button(onClick = {
+                        runCatching {
+                            context.startActivity(PouzdanostPomocnik.zahtjevIzuzecaBaterijeIntent(context))
+                        }
+                    }) {
+                        Text(text = stringResource(R.string.pouzdanost_baterija))
+                    }
+                }
+                if (prikaziAutostart) {
+                    Button(onClick = {
+                        runCatching { context.startActivity(PouzdanostPomocnik.miuiAutostartIntent()) }
+                    }) {
+                        Text(text = stringResource(R.string.pouzdanost_autostart))
+                    }
+                }
+                TextButton(onClick = onOdbaci) {
+                    Text(text = stringResource(R.string.pouzdanost_gotovo))
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun UtakmicaRow(utakmica: Utakmica) {
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
         val vrijemeText = utakmica.vrijeme?.format(timeFormatter) ?: stringResource(R.string.raspored_satnica_tbd)
@@ -147,6 +211,11 @@ private fun UtakmicaRow(utakmica: Utakmica) {
 @Composable
 private fun RasporedScreenPreview() {
     NavijaciTheme {
-        RasporedContent(uiState = RasporedUiState(ucitavanje = true), onRetry = {}, onVecernjiPodsjetnik = {})
+        RasporedContent(
+            uiState = RasporedUiState(ucitavanje = true),
+            onRetry = {},
+            onVecernjiPodsjetnik = {},
+            onOdbaciKarticu = {},
+        )
     }
 }

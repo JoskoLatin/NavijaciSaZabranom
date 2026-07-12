@@ -24,6 +24,12 @@
     <string name="raspored_vecernji_podsjetnik">Podsjetnik i večer prije utakmice (20:00)</string>
     <string name="action_retry">Pokušaj ponovno</string>
 
+    <string name="pouzdanost_naslov">Pouzdanost podsjetnika</string>
+    <string name="pouzdanost_tekst">Da podsjetnici pouzdano stignu i kad je aplikacija zatvorena, dopustite joj rad u pozadini: isključite optimizaciju baterije i uključite automatsko pokretanje.</string>
+    <string name="pouzdanost_baterija">Baterija</string>
+    <string name="pouzdanost_autostart">Autostart</string>
+    <string name="pouzdanost_gotovo">Gotovo</string>
+
     <string name="notifikacija_kanal_naziv">Podsjetnici za javljanje</string>
     <string name="notifikacija_kanal_opis">Obavijesti o danu utakmice i obvezi javljanja nadležnoj policijskoj postaji</string>
     <string name="notifikacija_dan_utakmice_naslov">%1$s danas igra</string>

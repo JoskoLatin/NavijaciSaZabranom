@@ -7,4 +7,8 @@ interface PostavkeRepository {
     fun observeVecernjiPodsjetnik(): Flow<Boolean>
     suspend fun getVecernjiPodsjetnik(): Boolean
     suspend fun postaviVecernjiPodsjetnik(ukljucen: Boolean)
+
+    /** Kartica s uputama za pouzdan rad u pozadini; nakon odbacivanja se ne prikazuje. */
+    fun observeKarticaPouzdanostiOdbacena(): Flow<Boolean>
+    suspend fun odbaciKarticuPouzdanosti()
 }
