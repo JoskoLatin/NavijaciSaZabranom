@@ -30,4 +30,12 @@
     <string name="notifikacija_dan_utakmice_tekst">Podsjetnik: obavezni ste javiti se nadležnoj policijskoj postaji. Utakmica: %1$s.</string>
     <string name="notifikacija_vecer_prije_naslov">%1$s sutra igra</string>
     <string name="notifikacija_vecer_prije_tekst">Podsjetnik unaprijed: sutra igra vaš klub. Ne zaboravite obvezu javljanja nadležnoj policijskoj postaji.</string>
+    <string name="notifikacija_termin_naslov">Novi termin utakmice</string>
+    <string name="notifikacija_termin_tekst">%1$s — %2$s: %3$s, %4$s.</string>
+    <string name="notifikacija_termin_vise_naslov">Novi termini utakmica</string>
+    <plurals name="notifikacija_termin_vise_tekst">
+        <item quantity="one">Promijenjen je termin za %1$d utakmicu vašeg kluba. Otvorite raspored za detalje.</item>
+        <item quantity="few">Promijenjeni su termini za %1$d utakmice vašeg kluba. Otvorite raspored za detalje.</item>
+        <item quantity="other">Promijenjeni su termini za %1$d utakmica vašeg kluba. Otvorite raspored za detalje.</item>
+    </plurals>
 </resources>

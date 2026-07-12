@@ -5,6 +5,7 @@ import com.navijacisazabranom.app.data.hns.local.PraceniKlubEntity
 import com.navijacisazabranom.app.data.hns.local.UtakmicaEntity
 import com.navijacisazabranom.app.data.postavke.PostavkeRepository
 import com.navijacisazabranom.app.notifikacije.AlarmScheduler
+import com.navijacisazabranom.app.notifikacije.NotifikacijaHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
@@ -15,6 +16,7 @@ class RoomPraceniKlubRepository @Inject constructor(
     private val natjecanjeRepository: NatjecanjeRepository,
     private val alarmScheduler: AlarmScheduler,
     private val postavkeRepository: PostavkeRepository,
+    private val notifikacijaHelper: NotifikacijaHelper,
 ) : PraceniKlubRepository {
 
     override fun observePraceniKlub(): Flow<PraceniKlub?> =
@@ -34,12 +36,20 @@ class RoomPraceniKlubRepository @Inject constructor(
 
     override suspend fun osvjeziUtakmice(natjecanjeId: String): Result<Unit> =
         natjecanjeRepository.getNatjecanjeStranica(natjecanjeId).map { stranica ->
-            database.utakmicaDao().zamijeniZaNatjecanje(
-                natjecanjeId,
-                stranica.utakmice.map { it.toEntity(natjecanjeId) },
-            )
+            val nove = stranica.utakmice.map { it.toEntity(natjecanjeId) }
+            prijaviPromjeneTermina(natjecanjeId, nove)
+            database.utakmicaDao().zamijeniZaNatjecanje(natjecanjeId, nove)
             zakaziNotifikacijeAkoPraceni(natjecanjeId)
         }
+
+    private suspend fun prijaviPromjeneTermina(natjecanjeId: String, nove: List<UtakmicaEntity>) {
+        val praceniKlub = database.praceniKlubDao().get() ?: return
+        if (praceniKlub.natjecanjeId != natjecanjeId) return
+
+        val stare = database.utakmicaDao().getZaKlub(natjecanjeId, praceniKlub.klubId)
+        val promjene = pronadjiPromjeneTermina(stare, nove, LocalDate.now())
+        notifikacijaHelper.prikaziPromjeneTermina(promjene.map { it.toDomain() })
+    }
 
     override suspend fun ponovnoZakaziNotifikacije() {
         val praceniKlub = database.praceniKlubDao().get() ?: return
