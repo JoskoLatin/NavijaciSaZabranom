@@ -11,4 +11,8 @@ interface PostavkeRepository {
     /** Kartica s uputama za pouzdan rad u pozadini; nakon odbacivanja se ne prikazuje. */
     fun observeKarticaPouzdanostiOdbacena(): Flow<Boolean>
     suspend fun odbaciKarticuPouzdanosti()
+
+    /** Verzija sheme/filtra indeksa klubova — promjena okida čišćenje i ponovnu izgradnju. */
+    suspend fun getIndeksVerzija(): Int
+    suspend fun postaviIndeksVerzija(verzija: Int)
 }

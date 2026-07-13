@@ -12,4 +12,10 @@ internal object HnsConfig {
         val pocetnaGodina = if (danas.monthValue >= 7) danas.year else danas.year - 1
         return "$pocetnaGodina/${pocetnaGodina + 1}"
     }
+
+    /** Niže lige novu sezonu objavljuju kasno (kolovoz/rujan), pa indeks pada na prošlu sezonu. */
+    fun proslaSezona(danas: LocalDate = LocalDate.now()): String {
+        val pocetnaGodina = if (danas.monthValue >= 7) danas.year else danas.year - 1
+        return "${pocetnaGodina - 1}/$pocetnaGodina"
+    }
 }

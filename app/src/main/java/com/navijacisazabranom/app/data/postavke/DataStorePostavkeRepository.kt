@@ -3,6 +3,7 @@ package com.navijacisazabranom.app.data.postavke
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -33,8 +34,16 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[KARTICA_POUZDANOSTI_ODBACENA] = true }
     }
 
+    override suspend fun getIndeksVerzija(): Int =
+        context.postavkeDataStore.data.map { it[INDEKS_VERZIJA] ?: 0 }.first()
+
+    override suspend fun postaviIndeksVerzija(verzija: Int) {
+        context.postavkeDataStore.edit { it[INDEKS_VERZIJA] = verzija }
+    }
+
     private companion object {
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
         val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
+        val INDEKS_VERZIJA = intPreferencesKey("indeks_verzija")
     }
 }

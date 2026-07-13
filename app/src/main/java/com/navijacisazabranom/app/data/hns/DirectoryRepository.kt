@@ -1,6 +1,11 @@
 package com.navijacisazabranom.app.data.hns
 
 interface DirectoryRepository {
-    suspend fun getOrganizacije(): Result<List<Organizacija>>
-    suspend fun getNatjecanja(organizacijaId: String): Result<List<Natjecanje>>
+    /** Savezi koji imaju objavljena natjecanja u danoj sezoni. */
+    suspend fun getOrganizacije(sezona: String = HnsConfig.tekucaSezona()): Result<List<Organizacija>>
+
+    suspend fun getNatjecanja(
+        organizacijaId: String,
+        sezona: String = HnsConfig.tekucaSezona(),
+    ): Result<List<Natjecanje>>
 }

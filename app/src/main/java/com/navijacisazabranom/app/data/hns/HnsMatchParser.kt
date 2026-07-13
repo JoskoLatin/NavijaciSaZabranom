@@ -33,7 +33,10 @@ object HnsMatchParser {
         return items.mapNotNull { li ->
             val id = li.attr("data-id")
             val naziv = li.selectFirst("div.title h3")?.text().orEmpty()
-            if (naziv.isBlank()) null else Klub(id, naziv)
+            val grbUrl = li.selectFirst("div.logo img")
+                ?.let { img -> img.absUrl("src").ifBlank { img.attr("src") } }
+                ?.takeIf { it.isNotBlank() }
+            if (naziv.isBlank()) null else Klub(id, naziv, grbUrl)
         }.distinctBy { it.id }
     }
 

@@ -4,12 +4,7 @@ sealed class Screen(val route: String) {
     data object Login : Screen("login")
     data object Registracija : Screen("registracija")
     data object PotvrdiEmail : Screen("potvrdi-email")
-    data object Rang : Screen("rang")
-
-    data object Klub : Screen("klub/{natjecanjeId}") {
-        const val ARG_NATJECANJE_ID = "natjecanjeId"
-        fun createRoute(natjecanjeId: String) = "klub/$natjecanjeId"
-    }
+    data object Trazilica : Screen("trazilica")
 
     data object Raspored : Screen("raspored/{natjecanjeId}/{klubId}") {
         const val ARG_NATJECANJE_ID = "natjecanjeId"

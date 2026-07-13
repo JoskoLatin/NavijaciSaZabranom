@@ -8,12 +8,11 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.navijacisazabranom.app.data.auth.trebaVerifikacijuEmaila
-import com.navijacisazabranom.app.ui.screens.klub.KlubScreen
 import com.navijacisazabranom.app.ui.screens.login.LoginScreen
 import com.navijacisazabranom.app.ui.screens.potvrdiemail.PotvrdiEmailScreen
-import com.navijacisazabranom.app.ui.screens.rang.RangScreen
 import com.navijacisazabranom.app.ui.screens.raspored.RasporedScreen
 import com.navijacisazabranom.app.ui.screens.registracija.RegistracijaScreen
+import com.navijacisazabranom.app.ui.screens.trazilica.TrazilicaScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
@@ -21,13 +20,13 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
     val startDestination = when {
         korisnik == null -> Screen.Login.route
         korisnik.trebaVerifikacijuEmaila() -> Screen.PotvrdiEmail.route
-        else -> Screen.Rang.route
+        else -> Screen.Trazilica.route
     }
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoggedIn = {
-                    navController.navigate(Screen.Rang.route) {
+                    navController.navigate(Screen.Trazilica.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
@@ -52,7 +51,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         composable(Screen.PotvrdiEmail.route) {
             PotvrdiEmailScreen(
                 onVerificiran = {
-                    navController.navigate(Screen.Rang.route) {
+                    navController.navigate(Screen.Trazilica.route) {
                         popUpTo(Screen.PotvrdiEmail.route) { inclusive = true }
                     }
                 },
@@ -63,17 +62,9 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                 },
             )
         }
-        composable(Screen.Rang.route) {
-            RangScreen(
-                onNatjecanjeSelected = { natjecanjeId ->
-                    navController.navigate(Screen.Klub.createRoute(natjecanjeId))
-                },
-            )
-        }
-        composable(Screen.Klub.route) { backStackEntry ->
-            val natjecanjeId = backStackEntry.arguments?.getString(Screen.Klub.ARG_NATJECANJE_ID).orEmpty()
-            KlubScreen(
-                onKlubSelected = { klubId ->
+        composable(Screen.Trazilica.route) {
+            TrazilicaScreen(
+                onKlubOdabran = { natjecanjeId, klubId ->
                     navController.navigate(Screen.Raspored.createRoute(natjecanjeId, klubId))
                 },
             )

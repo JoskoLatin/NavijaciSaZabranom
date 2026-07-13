@@ -2,7 +2,9 @@ package com.navijacisazabranom.app.di
 
 import com.navijacisazabranom.app.data.hns.DirectoryRepository
 import com.navijacisazabranom.app.data.hns.HnsDirectoryRepository
+import com.navijacisazabranom.app.data.hns.HnsKlubIndeksRepository
 import com.navijacisazabranom.app.data.hns.HnsNatjecanjeRepository
+import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
 import com.navijacisazabranom.app.data.hns.NatjecanjeRepository
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
 import com.navijacisazabranom.app.data.hns.RoomPraceniKlubRepository
@@ -27,4 +29,8 @@ abstract class CompetitionModule {
     @Binds
     @Singleton
     abstract fun bindPraceniKlubRepository(impl: RoomPraceniKlubRepository): PraceniKlubRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindKlubIndeksRepository(impl: HnsKlubIndeksRepository): KlubIndeksRepository
 }

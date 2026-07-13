@@ -91,6 +91,7 @@ dependencies {
     kapt(libs.room.compiler)
 
     implementation(libs.datastore.preferences)
+    implementation(libs.coil.compose)
 
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)

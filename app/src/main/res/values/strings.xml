@@ -42,15 +42,12 @@
     <string name="validacija_email">Unesite ispravnu email adresu.</string>
     <string name="validacija_lozinke_razlicite">Lozinke se ne podudaraju.</string>
 
-    <string name="rang_title">Odaberite natjecanje</string>
-    <string name="rang_savez_label">Savez</string>
-    <string name="rang_nema_natjecanja">Nema natjecanja za odabrani savez.</string>
-    <string name="rang_error_generic">Učitavanje saveza nije uspjelo. Provjerite internetsku vezu.</string>
-    <string name="action_next">Dalje</string>
-
-    <string name="klub_title">Odaberite klub</string>
+    <string name="trazilica_title">Odaberite klub</string>
     <string name="klub_search_placeholder">Pretraži klubove</string>
-    <string name="klub_error_generic">Učitavanje klubova nije uspjelo. Provjerite internetsku vezu.</string>
+    <string name="trazilica_hint_upisite">Upišite naziv svog kluba — pretražuju se svi rangovi natjecanja, od HNL-a do županijskih liga.</string>
+    <string name="trazilica_indeks_priprema">Popis klubova se preuzima…</string>
+    <string name="trazilica_indeks_napredak">Preuzimanje popisa klubova: %1$d/%2$d liga</string>
+    <string name="trazilica_nema_rezultata">Nema klubova za "%1$s". Ako se klub natječe, popis možda još nije u cijelosti preuzet.</string>
 
     <string name="raspored_title">Raspored</string>
     <string name="raspored_empty">Nema pronađenih utakmica.</string>
