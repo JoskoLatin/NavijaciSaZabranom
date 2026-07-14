@@ -77,6 +77,7 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
     implementation(libs.kotlinx.coroutines.play.services)
 
     implementation(libs.credentials)

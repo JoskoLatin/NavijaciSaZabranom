@@ -9,6 +9,7 @@ import com.navijacisazabranom.app.data.hns.IndeksStanje
 import com.navijacisazabranom.app.data.hns.KlubIndeks
 import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
+import com.navijacisazabranom.app.data.statistika.StatistikaRepository
 import com.navijacisazabranom.app.sync.IndeksiranjeWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,6 +38,7 @@ data class TrazilicaUiState(
 class TrazilicaViewModel @Inject constructor(
     private val klubIndeksRepository: KlubIndeksRepository,
     private val praceniKlubRepository: PraceniKlubRepository,
+    private val statistikaRepository: StatistikaRepository,
     indeksStanje: IndeksStanje,
     @ApplicationContext context: Context,
 ) : ViewModel() {
@@ -77,5 +79,7 @@ class TrazilicaViewModel @Inject constructor(
             praceniKlubRepository.postaviPraceniKlub(klub.natjecanjeId, klub.klubId, klub.naziv, klub.grbUrl)
             onOdabran(klub.natjecanjeId, klub.klubId)
         }
+        // Anonimna statistika (uid + klub + vrijeme); ne blokira navigaciju.
+        statistikaRepository.zabiljeziOdabirKluba(klub.klubId, klub.naziv, klub.natjecanjeNaziv)
     }
 }
