@@ -18,3 +18,7 @@ data class Utakmica(
     /** Naziv natjecanja (npr. "Liga nacija") — popunjeno za reprezentaciju, null za klupski raspored. */
     val natjecanje: String? = null,
 )
+
+/** Utakmica je odigrana ako ima rezultat ili joj je datum u prošlosti. */
+fun Utakmica.jeOdigrana(danas: LocalDate = LocalDate.now()): Boolean =
+    (rezultatDomacin != null && rezultatGost != null) || datum.isBefore(danas)

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.Utakmica
+import com.navijacisazabranom.app.data.hns.jeOdigrana
 import com.navijacisazabranom.app.ui.components.CenteredBox
+import com.navijacisazabranom.app.ui.theme.CrvenaOdigrana
 import com.navijacisazabranom.app.ui.theme.NavijaciTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -99,6 +102,7 @@ private fun ReprezentacijaRow(utakmica: Utakmica) {
         Text(
             text = "${utakmica.domacinNaziv} — ${utakmica.gostNaziv}$rezultat",
             style = MaterialTheme.typography.bodyLarge,
+            color = if (utakmica.jeOdigrana()) CrvenaOdigrana else Color.Unspecified,
         )
         utakmica.stadion?.let { stadion ->
             Text(text = stadion, style = MaterialTheme.typography.bodySmall)

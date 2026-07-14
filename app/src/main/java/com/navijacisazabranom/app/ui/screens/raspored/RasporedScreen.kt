@@ -35,9 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.navijacisazabranom.app.R
+import androidx.compose.ui.graphics.Color
 import com.navijacisazabranom.app.data.hns.Utakmica
+import com.navijacisazabranom.app.data.hns.jeOdigrana
 import com.navijacisazabranom.app.notifikacije.PouzdanostPomocnik
 import com.navijacisazabranom.app.ui.components.CenteredBox
+import com.navijacisazabranom.app.ui.theme.CrvenaOdigrana
 import com.navijacisazabranom.app.ui.theme.NavijaciTheme
 import java.time.format.DateTimeFormatter
 
@@ -191,15 +194,22 @@ private fun PouzdanostCard(
 
 @Composable
 private fun UtakmicaRow(utakmica: Utakmica) {
+    val odigrana = utakmica.jeOdigrana()
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
         val vrijemeText = utakmica.vrijeme?.format(timeFormatter) ?: stringResource(R.string.raspored_satnica_tbd)
         Text(
             text = "${utakmica.kolo}. kolo · ${utakmica.datum.format(dateFormatter)} $vrijemeText",
             style = MaterialTheme.typography.labelMedium,
         )
+        val rezultat = if (utakmica.rezultatDomacin != null && utakmica.rezultatGost != null) {
+            "  ${utakmica.rezultatDomacin}:${utakmica.rezultatGost}"
+        } else {
+            ""
+        }
         Text(
-            text = "${utakmica.domacinNaziv} — ${utakmica.gostNaziv}",
+            text = "${utakmica.domacinNaziv} — ${utakmica.gostNaziv}$rezultat",
             style = MaterialTheme.typography.bodyLarge,
+            color = if (odigrana) CrvenaOdigrana else Color.Unspecified,
         )
         utakmica.stadion?.let { stadion ->
             Text(text = stadion, style = MaterialTheme.typography.bodySmall)
