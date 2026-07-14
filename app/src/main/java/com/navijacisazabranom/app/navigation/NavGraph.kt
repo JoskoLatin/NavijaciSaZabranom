@@ -1,6 +1,9 @@
 package com.navijacisazabranom.app.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +27,13 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         korisnik.trebaVerifikacijuEmaila() -> Screen.PotvrdiEmail.route
         else -> Screen.Profil.route
     }
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding(),
+    ) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoggedIn = {
