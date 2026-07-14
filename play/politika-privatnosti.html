@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Politika privatnosti — Navijači sa zabranom</title>
+<style>
+  :root {
+    --bg: #f4f6f2; --surface: #ffffff; --ink: #17231b; --soft: #4c5c51;
+    --line: #e0e7e0; --brand: #1b5e20; --accent: #d32f2f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10160f; --surface: #171f18; --ink: #e8eee8; --soft: #9db0a2;
+      --line: #26312a; --brand: #7ace7f; --accent: #ef6d6d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 22px 72px; }
+  header { border-bottom: 3px solid var(--brand); padding-bottom: 20px; margin-bottom: 28px; }
+  .kicker {
+    text-transform: uppercase; letter-spacing: .12em; font-size: .72rem;
+    font-weight: 700; color: var(--brand); margin: 0 0 8px;
+  }
+  h1 { font-size: clamp(1.6rem, 5vw, 2.1rem); line-height: 1.15; margin: 0 0 8px; letter-spacing: -.01em; }
+  .updated { color: var(--soft); font-size: .9rem; margin: 0; }
+  h2 { font-size: 1.15rem; margin: 32px 0 8px; color: var(--brand); }
+  p, li { color: var(--ink); }
+  .soft { color: var(--soft); }
+  a { color: var(--brand); text-underline-offset: 2px; }
+  strong { font-weight: 700; }
+  ul { padding-left: 1.25rem; }
+  li { margin: 4px 0; }
+  .box {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin: 16px 0;
+  }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--soft); font-size: .9rem; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="kicker">Navijači sa zabranom</p>
+      <h1>Politika privatnosti</h1>
+      <p class="updated">Zadnja izmjena: 14. srpnja 2026.</p>
+    </header>
+
+    <p>Ova politika objašnjava koje podatke aplikacija <strong>Navijači sa zabranom</strong> prikuplja, zašto, i koja su vaša prava. Trudimo se prikupljati što je manje moguće.</p>
+
+    <h2>Voditelj obrade</h2>
+    <div class="box">
+      <p style="margin:.2rem 0"><strong>[ime i prezime / naziv razvijatelja]</strong></p>
+      <p style="margin:.2rem 0">Kontakt: <strong>[kontakt email]</strong></p>
+    </div>
+    <p class="soft">Za sva pitanja o privatnosti javite se na gornji email.</p>
+
+    <h2>Koje podatke prikupljamo i zašto</h2>
+    <p><strong>1. Podaci za prijavu (Firebase Authentication)</strong><br>
+      Kad izradite račun, prikupljamo vašu <strong>email adresu</strong> (ili podatke Google računa ako se prijavljujete Googleom) te jedinstveni <strong>identifikator računa</strong>. Koristimo ih isključivo za izradu računa, prijavu i verifikaciju emaila. Lozinku ne vidimo niti pohranjujemo — njome upravlja Google Firebase.</p>
+    <p><strong>2. Odabir kluba (statistika)</strong><br>
+      Kad odaberete klub koji pratite, bilježimo <strong>koji je klub odabran</strong>, <strong>vrijeme odabira</strong> i <strong>identifikator vašeg računa</strong>. Ove podatke koristimo u zbirnom obliku, radi statistike o tome koje klubove korisnici prate. Uz zapis se <strong>ne sprema vaša email adresa</strong>, no identifikator je tehnički povezan s vašim računom.</p>
+    <p><strong>3. Podaci pohranjeni samo na vašem uređaju</strong><br>
+      Praćeni klub, preuzeti raspored i vaše postavke (npr. podsjetnici) spremaju se <strong>lokalno na uređaju</strong> i ne šalju se nama. Rasporede dohvaćamo s javnog izvora Hrvatskog nogometnog saveza; pritom se ne šalju vaši osobni podaci.</p>
+
+    <h2>Kako obrađujemo podatke</h2>
+    <p>Za prijavu i pohranu statistike koristimo usluge <strong>Google Firebase</strong> (Authentication i Cloud Firestore). Google u tom slučaju djeluje kao izvršitelj obrade i podatke pohranjuje na svojoj infrastrukturi. Više u <a href="https://policies.google.com/privacy">Googleovoj politici privatnosti</a>.</p>
+    <p>Pravna osnova obrade (GDPR čl. 6): izvršenje usluge koju ste zatražili (prijava) i vaša privola te naš legitimni interes za osnovnu statistiku korištenja.</p>
+
+    <h2>Dijeljenje podataka</h2>
+    <p><strong>Ne prodajemo vaše podatke i ne dijelimo ih s trećim stranama</strong> u marketinške svrhe. Podaci se obrađuju samo putem Google Firebasea kao tehničke infrastrukture opisane gore.</p>
+
+    <h2>Koliko dugo čuvamo podatke</h2>
+    <p>Podatke računa čuvamo dok imate račun. Statistički zapisi čuvaju se dok su potrebni za statistiku. Na vaš zahtjev brišemo vaše podatke.</p>
+
+    <h2>Vaša prava</h2>
+    <p>Sukladno GDPR-u imate pravo na: pristup svojim podacima, ispravak, <strong>brisanje</strong>, ograničenje obrade te povlačenje privole. Za ostvarivanje bilo kojeg prava javite se na kontakt email iznad.</p>
+
+    <h2>Brisanje računa i podataka</h2>
+    <p>Brisanje računa i svih povezanih podataka možete zatražiti u bilo kojem trenutku slanjem emaila na kontakt adresu iznad. Zahtjev obrađujemo u razumnom roku.</p>
+
+    <h2>Djeca</h2>
+    <p>Aplikacija nije namijenjena osobama mlađima od 16 godina i svjesno ne prikupljamo njihove podatke.</p>
+
+    <h2>Sigurnost</h2>
+    <p>Podaci se prenose šifrirano (HTTPS) i pohranjuju na Googleovoj infrastrukturi. Ni jedan sustav nije potpuno siguran, no poduzimamo razumne mjere zaštite.</p>
+
+    <h2>Izmjene politike</h2>
+    <p>Ovu politiku možemo povremeno ažurirati. Bitne izmjene objavit ćemo na ovoj stranici uz novi datum izmjene.</p>
+
+    <footer>
+      Kontakt za pitanja o privatnosti: <strong>[kontakt email]</strong>
+    </footer>
+  </div>
+</body>
+</html>
