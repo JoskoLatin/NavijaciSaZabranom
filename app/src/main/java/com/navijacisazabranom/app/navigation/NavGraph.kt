@@ -10,8 +10,10 @@ import com.google.firebase.ktx.Firebase
 import com.navijacisazabranom.app.data.auth.trebaVerifikacijuEmaila
 import com.navijacisazabranom.app.ui.screens.login.LoginScreen
 import com.navijacisazabranom.app.ui.screens.potvrdiemail.PotvrdiEmailScreen
+import com.navijacisazabranom.app.ui.screens.profil.ProfilScreen
 import com.navijacisazabranom.app.ui.screens.raspored.RasporedScreen
 import com.navijacisazabranom.app.ui.screens.registracija.RegistracijaScreen
+import com.navijacisazabranom.app.ui.screens.reprezentacija.ReprezentacijaScreen
 import com.navijacisazabranom.app.ui.screens.trazilica.TrazilicaScreen
 
 @Composable
@@ -20,13 +22,13 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
     val startDestination = when {
         korisnik == null -> Screen.Login.route
         korisnik.trebaVerifikacijuEmaila() -> Screen.PotvrdiEmail.route
-        else -> Screen.Trazilica.route
+        else -> Screen.Profil.route
     }
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoggedIn = {
-                    navController.navigate(Screen.Trazilica.route) {
+                    navController.navigate(Screen.Profil.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
@@ -51,7 +53,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         composable(Screen.PotvrdiEmail.route) {
             PotvrdiEmailScreen(
                 onVerificiran = {
-                    navController.navigate(Screen.Trazilica.route) {
+                    navController.navigate(Screen.Profil.route) {
                         popUpTo(Screen.PotvrdiEmail.route) { inclusive = true }
                     }
                 },
@@ -62,12 +64,31 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                 },
             )
         }
-        composable(Screen.Trazilica.route) {
-            TrazilicaScreen(
-                onKlubOdabran = { natjecanjeId, klubId ->
+        composable(Screen.Profil.route) {
+            ProfilScreen(
+                onPromijeniKlub = { navController.navigate(Screen.Trazilica.route) },
+                onOtvoriRaspored = { natjecanjeId, klubId ->
                     navController.navigate(Screen.Raspored.createRoute(natjecanjeId, klubId))
                 },
+                onReprezentacija = { navController.navigate(Screen.Reprezentacija.route) },
+                onNemaKluba = {
+                    navController.navigate(Screen.Trazilica.route) {
+                        popUpTo(Screen.Profil.route) { inclusive = true }
+                    }
+                },
             )
+        }
+        composable(Screen.Trazilica.route) {
+            TrazilicaScreen(
+                onKlubOdabran = { _, _ ->
+                    navController.navigate(Screen.Profil.route) {
+                        popUpTo(Screen.Profil.route) { inclusive = true }
+                    }
+                },
+            )
+        }
+        composable(Screen.Reprezentacija.route) {
+            ReprezentacijaScreen()
         }
         composable(Screen.Raspored.route) {
             RasporedScreen()

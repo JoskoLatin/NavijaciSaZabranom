@@ -41,9 +41,17 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[INDEKS_VERZIJA] = verzija }
     }
 
+    override fun observeHnsNaopako(): Flow<Boolean> =
+        context.postavkeDataStore.data.map { it[HNS_NAOPAKO] ?: false }
+
+    override suspend fun preokreniHnsLogo() {
+        context.postavkeDataStore.edit { it[HNS_NAOPAKO] = !(it[HNS_NAOPAKO] ?: false) }
+    }
+
     private companion object {
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
         val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
         val INDEKS_VERZIJA = intPreferencesKey("indeks_verzija")
+        val HNS_NAOPAKO = booleanPreferencesKey("hns_naopako")
     }
 }

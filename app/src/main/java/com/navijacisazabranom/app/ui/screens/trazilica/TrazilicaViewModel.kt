@@ -74,7 +74,7 @@ class TrazilicaViewModel @Inject constructor(
 
     fun odaberiKlub(klub: KlubIndeks, onOdabran: (natjecanjeId: String, klubId: String) -> Unit) {
         viewModelScope.launch {
-            praceniKlubRepository.postaviPraceniKlub(klub.natjecanjeId, klub.klubId, klub.naziv)
+            praceniKlubRepository.postaviPraceniKlub(klub.natjecanjeId, klub.klubId, klub.naziv, klub.grbUrl)
             onOdabran(klub.natjecanjeId, klub.klubId)
         }
     }

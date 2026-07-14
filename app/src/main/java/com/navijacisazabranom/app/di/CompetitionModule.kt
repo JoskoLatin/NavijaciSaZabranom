@@ -5,8 +5,10 @@ import com.navijacisazabranom.app.data.hns.HnsDirectoryRepository
 import com.navijacisazabranom.app.data.hns.HnsKlubIndeksRepository
 import com.navijacisazabranom.app.data.hns.HnsNatjecanjeRepository
 import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
+import com.navijacisazabranom.app.data.hns.HnsReprezentacijaRepository
 import com.navijacisazabranom.app.data.hns.NatjecanjeRepository
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
+import com.navijacisazabranom.app.data.hns.ReprezentacijaRepository
 import com.navijacisazabranom.app.data.hns.RoomPraceniKlubRepository
 import dagger.Binds
 import dagger.Module
@@ -33,4 +35,8 @@ abstract class CompetitionModule {
     @Binds
     @Singleton
     abstract fun bindKlubIndeksRepository(impl: HnsKlubIndeksRepository): KlubIndeksRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReprezentacijaRepository(impl: HnsReprezentacijaRepository): ReprezentacijaRepository
 }

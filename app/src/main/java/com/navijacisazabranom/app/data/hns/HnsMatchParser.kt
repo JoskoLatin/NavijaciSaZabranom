@@ -19,14 +19,27 @@ object HnsMatchParser {
     private const val TAG = "HnsMatchParser"
     private val DATE_REGEX = Regex("""(\d{2})\.(\d{2})\.(\d{4})\.\s*(\d{2}:\d{2})?""")
 
-    fun parseUtakmice(document: Document): List<Utakmica> {
-        val rows = document.select("div.competition_results_scorers_cards li.row[data-match]")
-        return rows.mapNotNull { row ->
+    /** Klupski raspored: markup se ponavlja u po-klupskim widgetima, pa je nužan uži scope. */
+    private const val SCOPE_KLUB = "div.competition_results_scorers_cards li.row[data-match]"
+
+    /**
+     * Reprezentacija (rezultati.hns.team): nema competition_results wrappera; redovi su
+     * "row visible" i na stranici postoji točno jedan skup pa je scope po klasi dovoljan.
+     */
+    private const val SCOPE_REPREZENTACIJA = "li.row[data-match]"
+
+    fun parseUtakmice(document: Document): List<Utakmica> =
+        parseRedove(document.select(SCOPE_KLUB))
+
+    fun parseReprezentacija(document: Document): List<Utakmica> =
+        parseRedove(document.select(SCOPE_REPREZENTACIJA))
+
+    private fun parseRedove(rows: List<Element>): List<Utakmica> =
+        rows.mapNotNull { row ->
             runCatching { parseRow(row) }
                 .onFailure { Log.w(TAG, "Preskačem redak koji se ne može parsirati: ${it.message}") }
                 .getOrNull()
         }.distinctBy { it.id }
-    }
 
     fun parseKlubovi(document: Document): List<Klub> {
         val items = document.select("div.clubs_in_competition ul.club_list_inner li[data-id]")
@@ -50,20 +63,29 @@ object HnsMatchParser {
         val club1 = row.selectFirst("div.club1") ?: error("Nedostaje div.club1")
         val club2 = row.selectFirst("div.club2") ?: error("Nedostaje div.club2")
 
+        // Reprezentacijski gost nema <a> (ime je goli tekst), pa fallback na ownText.
+        val stadion = (row.selectFirst("div.facility") ?: row.selectFirst("div.stadium"))
+            ?.text()?.trim()?.takeIf { it.isNotBlank() && it != "-" }
+
         return Utakmica(
             id = id,
             kolo = kolo,
             datum = datum,
             vrijeme = vrijeme,
             domacinId = club1.attr("data-id"),
-            domacinNaziv = club1.selectFirst("a")?.text().orEmpty(),
+            domacinNaziv = imeKluba(club1),
             gostId = club2.attr("data-id"),
-            gostNaziv = club2.selectFirst("a")?.text().orEmpty(),
-            stadion = row.selectFirst("div.facility")?.text()?.ifBlank { null },
+            gostNaziv = imeKluba(club2),
+            stadion = stadion,
             rezultatDomacin = row.selectFirst("div.res1")?.text()?.trim()?.toIntOrNull(),
             rezultatGost = row.selectFirst("div.res2")?.text()?.trim()?.toIntOrNull(),
+            natjecanje = row.selectFirst("div.competition")?.text()?.trim()
+                ?.takeIf { it.isNotBlank() && it != "-" },
         )
     }
+
+    private fun imeKluba(club: Element): String =
+        club.selectFirst("a")?.text()?.ifBlank { null } ?: club.ownText().trim()
 
     private fun parseDatumVrijeme(text: String): Pair<LocalDate, LocalTime?> {
         val match = DATE_REGEX.find(text.trim()) ?: error("Neočekivan format datuma: '$text'")

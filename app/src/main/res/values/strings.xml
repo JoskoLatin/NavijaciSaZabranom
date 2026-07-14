@@ -42,6 +42,16 @@
     <string name="validacija_email">Unesite ispravnu email adresu.</string>
     <string name="validacija_lozinke_razlicite">Lozinke se ne podudaraju.</string>
 
+    <string name="profil_sljedeca_utakmica">Sljedeća utakmica</string>
+    <string name="profil_nema_sljedece">Nema nadolazećih utakmica u rasporedu.</string>
+    <string name="profil_cijeli_raspored">Prikaži cijeli raspored</string>
+    <string name="profil_promijeni_klub">Promijeni klub</string>
+    <string name="profil_reprezentacija">Raspored reprezentacije</string>
+
+    <string name="reprezentacija_title">Raspored reprezentacije</string>
+    <string name="reprezentacija_greska">Preuzimanje rasporeda reprezentacije nije uspjelo. Provjerite internetsku vezu.</string>
+    <string name="reprezentacija_prazno">Trenutačno nema objavljenih utakmica reprezentacije.</string>
+
     <string name="trazilica_title">Odaberite klub</string>
     <string name="klub_search_placeholder">Pretraži klubove</string>
     <string name="trazilica_hint_upisite">Upišite naziv svog kluba — pretražuju se svi rangovi natjecanja, od HNL-a do županijskih liga.</string>

@@ -25,9 +25,19 @@ class RoomPraceniKlubRepository @Inject constructor(
     override suspend fun getPraceniKlub(): PraceniKlub? =
         database.praceniKlubDao().get()?.toDomain()
 
-    override suspend fun postaviPraceniKlub(natjecanjeId: String, klubId: String, klubNaziv: String) {
+    override suspend fun postaviPraceniKlub(
+        natjecanjeId: String,
+        klubId: String,
+        klubNaziv: String,
+        grbUrl: String?,
+    ) {
         database.praceniKlubDao().postavi(
-            PraceniKlubEntity(natjecanjeId = natjecanjeId, klubId = klubId, klubNaziv = klubNaziv),
+            PraceniKlubEntity(
+                natjecanjeId = natjecanjeId,
+                klubId = klubId,
+                klubNaziv = klubNaziv,
+                grbUrl = grbUrl,
+            ),
         )
     }
 
@@ -73,7 +83,7 @@ class RoomPraceniKlubRepository @Inject constructor(
         )
     }
 
-    private fun PraceniKlubEntity.toDomain() = PraceniKlub(natjecanjeId, klubId, klubNaziv)
+    private fun PraceniKlubEntity.toDomain() = PraceniKlub(natjecanjeId, klubId, klubNaziv, grbUrl)
 
     private fun UtakmicaEntity.toDomain() = Utakmica(
         id = id,

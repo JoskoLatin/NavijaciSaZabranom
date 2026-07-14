@@ -15,4 +15,8 @@ interface PostavkeRepository {
     /** Verzija sheme/filtra indeksa klubova — promjena okida čišćenje i ponovnu izgradnju. */
     suspend fun getIndeksVerzija(): Int
     suspend fun postaviIndeksVerzija(verzija: Int)
+
+    /** Je li HNS logo okrenut naopako (easter egg triple-tap); trajno se pamti. */
+    fun observeHnsNaopako(): Flow<Boolean>
+    suspend fun preokreniHnsLogo()
 }

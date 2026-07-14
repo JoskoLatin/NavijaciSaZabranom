@@ -10,4 +10,5 @@ data class PraceniKlubEntity(
     val natjecanjeId: String,
     val klubId: String,
     val klubNaziv: String,
+    val grbUrl: String? = null,
 )
