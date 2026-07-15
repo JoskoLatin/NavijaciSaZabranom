@@ -5,4 +5,5 @@ data class PraceniKlub(
     val klubId: String,
     val klubNaziv: String,
     val grbUrl: String? = null,
+    val natjecanjeNaziv: String = "",
 )

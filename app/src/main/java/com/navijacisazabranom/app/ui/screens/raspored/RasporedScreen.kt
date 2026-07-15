@@ -197,9 +197,12 @@ private fun UtakmicaRow(utakmica: Utakmica) {
     val odigrana = utakmica.jeOdigrana()
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
         val vrijemeText = utakmica.vrijeme?.format(timeFormatter) ?: stringResource(R.string.raspored_satnica_tbd)
+        // Europske utakmice nose naziv natjecanja umjesto broja kola.
+        val oznaka = utakmica.natjecanje ?: "${utakmica.kolo}. kolo"
         Text(
-            text = "${utakmica.kolo}. kolo · ${utakmica.datum.format(dateFormatter)} $vrijemeText",
+            text = "$oznaka · ${utakmica.datum.format(dateFormatter)} $vrijemeText",
             style = MaterialTheme.typography.labelMedium,
+            color = if (utakmica.natjecanje != null) MaterialTheme.colorScheme.primary else Color.Unspecified,
         )
         val rezultat = if (utakmica.rezultatDomacin != null && utakmica.rezultatGost != null) {
             "  ${utakmica.rezultatDomacin}:${utakmica.rezultatGost}"

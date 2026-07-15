@@ -1,5 +1,6 @@
 package com.navijacisazabranom.app.data.hns
 
+import android.util.Log
 import com.navijacisazabranom.app.data.hns.local.NavijaciDatabase
 import com.navijacisazabranom.app.data.hns.local.PraceniKlubEntity
 import com.navijacisazabranom.app.data.hns.local.UtakmicaEntity
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class RoomPraceniKlubRepository @Inject constructor(
     private val database: NavijaciDatabase,
     private val natjecanjeRepository: NatjecanjeRepository,
+    private val europskiRepository: EuropskiRepository,
     private val alarmScheduler: AlarmScheduler,
     private val postavkeRepository: PostavkeRepository,
     private val notifikacijaHelper: NotifikacijaHelper,
@@ -30,6 +32,7 @@ class RoomPraceniKlubRepository @Inject constructor(
         klubId: String,
         klubNaziv: String,
         grbUrl: String?,
+        natjecanjeNaziv: String,
     ) {
         database.praceniKlubDao().postavi(
             PraceniKlubEntity(
@@ -37,6 +40,7 @@ class RoomPraceniKlubRepository @Inject constructor(
                 klubId = klubId,
                 klubNaziv = klubNaziv,
                 grbUrl = grbUrl,
+                natjecanjeNaziv = natjecanjeNaziv,
             ),
         )
     }
@@ -46,17 +50,41 @@ class RoomPraceniKlubRepository @Inject constructor(
 
     override suspend fun osvjeziUtakmice(natjecanjeId: String): Result<Unit> =
         natjecanjeRepository.getNatjecanjeStranica(natjecanjeId).map { stranica ->
-            val nove = stranica.utakmice.map { it.toEntity(natjecanjeId) }
+            val nove = stranica.utakmice.map { it.toEntity(natjecanjeId, "hns") }
             prijaviPromjeneTermina(natjecanjeId, nove)
-            database.utakmicaDao().zamijeniZaNatjecanje(natjecanjeId, nove)
+            database.utakmicaDao().zamijeniZaNatjecanje(natjecanjeId, nove, "hns")
+            osvjeziEuropske(natjecanjeId)
             zakaziNotifikacijeAkoPraceni(natjecanjeId)
         }
+
+    /**
+     * Za klubove najvišeg ranga (HNL) dohvaća europske utakmice i sprema ih uz
+     * domaći raspored (izvor "uefa"), pa ih klupski upit i notifikacije pokupe.
+     * Neuspjeh se samo logira — europski dio nikad ne ruši domaći raspored.
+     */
+    private suspend fun osvjeziEuropske(natjecanjeId: String) {
+        val praceniKlub = database.praceniKlubDao().get() ?: return
+        if (praceniKlub.natjecanjeId != natjecanjeId) return
+        if (!praceniKlub.natjecanjeNaziv.contains("HNL", ignoreCase = true)) return
+
+        europskiRepository.getEuropskeUtakmice(praceniKlub.klubNaziv, praceniKlub.klubId)
+            .onSuccess { europske ->
+                database.utakmicaDao().zamijeniZaNatjecanje(
+                    natjecanjeId,
+                    europske.map { it.toEntity(natjecanjeId, "uefa") },
+                    "uefa",
+                )
+            }
+            .onFailure { Log.w(TAG, "Dohvat europskih utakmica nije uspio", it) }
+    }
 
     private suspend fun prijaviPromjeneTermina(natjecanjeId: String, nove: List<UtakmicaEntity>) {
         val praceniKlub = database.praceniKlubDao().get() ?: return
         if (praceniKlub.natjecanjeId != natjecanjeId) return
 
+        // Usporedba samo domaćeg izvora — europske se osvježavaju zasebno.
         val stare = database.utakmicaDao().getZaKlub(natjecanjeId, praceniKlub.klubId)
+            .filter { it.izvor == "hns" }
         val promjene = pronadjiPromjeneTermina(stare, nove, LocalDate.now())
         notifikacijaHelper.prikaziPromjeneTermina(promjene.map { it.toDomain() })
     }
@@ -83,7 +111,8 @@ class RoomPraceniKlubRepository @Inject constructor(
         )
     }
 
-    private fun PraceniKlubEntity.toDomain() = PraceniKlub(natjecanjeId, klubId, klubNaziv, grbUrl)
+    private fun PraceniKlubEntity.toDomain() =
+        PraceniKlub(natjecanjeId, klubId, klubNaziv, grbUrl, natjecanjeNaziv)
 
     private fun UtakmicaEntity.toDomain() = Utakmica(
         id = id,
@@ -97,9 +126,10 @@ class RoomPraceniKlubRepository @Inject constructor(
         stadion = stadion,
         rezultatDomacin = rezultatDomacin,
         rezultatGost = rezultatGost,
+        natjecanje = natjecanje,
     )
 
-    private fun Utakmica.toEntity(natjecanjeId: String) = UtakmicaEntity(
+    private fun Utakmica.toEntity(natjecanjeId: String, izvor: String) = UtakmicaEntity(
         id = id,
         natjecanjeId = natjecanjeId,
         kolo = kolo,
@@ -112,5 +142,11 @@ class RoomPraceniKlubRepository @Inject constructor(
         stadion = stadion,
         rezultatDomacin = rezultatDomacin,
         rezultatGost = rezultatGost,
+        natjecanje = natjecanje,
+        izvor = izvor,
     )
+
+    private companion object {
+        const val TAG = "PraceniKlubRepo"
+    }
 }

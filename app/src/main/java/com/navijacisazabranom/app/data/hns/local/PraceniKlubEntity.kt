@@ -11,4 +11,6 @@ data class PraceniKlubEntity(
     val klubId: String,
     val klubNaziv: String,
     val grbUrl: String? = null,
+    /** Naziv ranga (npr. "SuperSport HNL") — služi i za odluku o dohvatu europskih utakmica. */
+    val natjecanjeNaziv: String = "",
 )

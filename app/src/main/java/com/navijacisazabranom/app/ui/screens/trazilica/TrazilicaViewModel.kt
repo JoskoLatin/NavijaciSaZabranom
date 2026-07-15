@@ -66,7 +66,9 @@ class TrazilicaViewModel @Inject constructor(
 
     fun odaberiKlub(klub: KlubIndeks, onOdabran: (natjecanjeId: String, klubId: String) -> Unit) {
         viewModelScope.launch {
-            praceniKlubRepository.postaviPraceniKlub(klub.natjecanjeId, klub.klubId, klub.naziv, klub.grbUrl)
+            praceniKlubRepository.postaviPraceniKlub(
+                klub.natjecanjeId, klub.klubId, klub.naziv, klub.grbUrl, klub.natjecanjeNaziv,
+            )
             onOdabran(klub.natjecanjeId, klub.klubId)
         }
         // Anonimna statistika (uid + klub + vrijeme); ne blokira navigaciju.

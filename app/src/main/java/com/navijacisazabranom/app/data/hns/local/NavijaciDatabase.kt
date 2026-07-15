@@ -11,7 +11,7 @@ import androidx.room.TypeConverters
         KlubIndeksEntity::class,
         IndeksiranaLigaEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(RoomConverters::class)

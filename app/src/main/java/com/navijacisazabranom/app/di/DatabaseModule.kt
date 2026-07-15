@@ -39,10 +39,18 @@ object DatabaseModule {
         }
     }
 
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `utakmica` ADD COLUMN `natjecanje` TEXT")
+            db.execSQL("ALTER TABLE `utakmica` ADD COLUMN `izvor` TEXT NOT NULL DEFAULT 'hns'")
+            db.execSQL("ALTER TABLE `praceni_klub` ADD COLUMN `natjecanjeNaziv` TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): NavijaciDatabase =
         Room.databaseBuilder(context, NavijaciDatabase::class.java, "navijaci.db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 }

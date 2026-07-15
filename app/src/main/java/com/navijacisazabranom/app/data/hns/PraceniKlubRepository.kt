@@ -10,6 +10,7 @@ interface PraceniKlubRepository {
         klubId: String,
         klubNaziv: String,
         grbUrl: String?,
+        natjecanjeNaziv: String,
     )
     fun observeUtakmice(natjecanjeId: String, klubId: String): Flow<List<Utakmica>>
 

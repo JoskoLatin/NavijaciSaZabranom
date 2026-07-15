@@ -21,15 +21,20 @@ interface UtakmicaDao {
     )
     suspend fun getZaKlub(natjecanjeId: String, klubId: String): List<UtakmicaEntity>
 
-    @Query("DELETE FROM utakmica WHERE natjecanjeId = :natjecanjeId")
-    suspend fun obrisiZaNatjecanje(natjecanjeId: String)
+    @Query("DELETE FROM utakmica WHERE natjecanjeId = :natjecanjeId AND izvor = :izvor")
+    suspend fun obrisiZaNatjecanjeIizvor(natjecanjeId: String, izvor: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(utakmice: List<UtakmicaEntity>)
 
+    /** Zamjenjuje utakmice samo za dani izvor ("hns" ili "uefa"); drugi izvor ostaje netaknut. */
     @Transaction
-    suspend fun zamijeniZaNatjecanje(natjecanjeId: String, utakmice: List<UtakmicaEntity>) {
-        obrisiZaNatjecanje(natjecanjeId)
+    suspend fun zamijeniZaNatjecanje(
+        natjecanjeId: String,
+        utakmice: List<UtakmicaEntity>,
+        izvor: String = "hns",
+    ) {
+        obrisiZaNatjecanjeIizvor(natjecanjeId, izvor)
         insertAll(utakmice)
     }
 }
