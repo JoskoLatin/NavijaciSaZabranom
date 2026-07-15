@@ -72,32 +72,39 @@ private fun TrazilicaContent(
                 .padding(top = 16.dp),
         )
 
-        uiState.napredak?.let { napredak ->
-            LinearProgressIndicator(
-                progress = if (napredak.ukupno > 0) napredak.obradjeno / napredak.ukupno.toFloat() else 0f,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-            )
+        // Popis već postoji, ali se u pozadini još dopunjava (kraj prvog preuzimanja) —
+        // pretraga radi, ovo je samo suptilna napomena, ne blokira.
+        if (uiState.brojKlubova > 0 && uiState.napredak != null) {
             Text(
-                text = if (napredak.ukupno > 0) {
-                    stringResource(R.string.trazilica_indeks_napredak, napredak.obradjeno, napredak.ukupno)
-                } else {
-                    stringResource(R.string.trazilica_indeks_priprema)
-                },
+                text = stringResource(R.string.trazilica_dopunjavanje),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
 
         when {
+            // Prvo pokretanje ikad: baza je prazna → jednokratno preuzimanje.
+            uiState.brojKlubova == 0 -> CenteredBox {
+                val napredak = uiState.napredak
+                if (napredak != null && napredak.ukupno > 0) {
+                    LinearProgressIndicator(
+                        progress = napredak.obradjeno / napredak.ukupno.toFloat(),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                } else {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+                Text(
+                    text = stringResource(R.string.trazilica_prvo_preuzimanje),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 16.dp),
+                )
+            }
             uiState.upit.isBlank() -> CenteredBox {
                 Text(
-                    text = if (uiState.brojKlubova > 0) {
-                        stringResource(R.string.trazilica_hint_upisite)
-                    } else {
-                        stringResource(R.string.trazilica_indeks_priprema)
-                    },
+                    text = stringResource(R.string.trazilica_hint_upisite),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                 )

@@ -55,8 +55,8 @@
     <string name="trazilica_title">Odaberite klub</string>
     <string name="klub_search_placeholder">Pretraži klubove</string>
     <string name="trazilica_hint_upisite">Upišite naziv svog kluba — pretražuju se svi rangovi natjecanja, od HNL-a do županijskih liga.</string>
-    <string name="trazilica_indeks_priprema">Popis klubova se preuzima…</string>
-    <string name="trazilica_indeks_napredak">Preuzimanje popisa klubova: %1$d/%2$d liga</string>
+    <string name="trazilica_prvo_preuzimanje">Prvo preuzimanje popisa klubova. Ovo je jednokratno i može potrajati minutu.</string>
+    <string name="trazilica_dopunjavanje">Popis se još dopunjava…</string>
     <string name="trazilica_nema_rezultata">Nema klubova za "%1$s". Ako se klub natječe, popis možda još nije u cijelosti preuzet.</string>
 
     <string name="raspored_title">Raspored</string>

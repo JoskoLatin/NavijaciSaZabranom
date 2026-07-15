@@ -1,18 +1,14 @@
 package com.navijacisazabranom.app.ui.screens.trazilica
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkManager
 import com.navijacisazabranom.app.data.hns.IndeksNapredak
 import com.navijacisazabranom.app.data.hns.IndeksStanje
 import com.navijacisazabranom.app.data.hns.KlubIndeks
 import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
 import com.navijacisazabranom.app.data.statistika.StatistikaRepository
-import com.navijacisazabranom.app.sync.IndeksiranjeWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +36,6 @@ class TrazilicaViewModel @Inject constructor(
     private val praceniKlubRepository: PraceniKlubRepository,
     private val statistikaRepository: StatistikaRepository,
     indeksStanje: IndeksStanje,
-    @ApplicationContext context: Context,
 ) : ViewModel() {
 
     private val upit = MutableStateFlow("")
@@ -64,11 +59,6 @@ class TrazilicaViewModel @Inject constructor(
             napredak = napredak,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrazilicaUiState())
-
-    init {
-        // Gradi/osvježava indeks po potrebi; worker sam odustaje ako je svjež.
-        IndeksiranjeWorker.pokreni(WorkManager.getInstance(context))
-    }
 
     fun promijeniUpit(novi: String) {
         upit.value = novi

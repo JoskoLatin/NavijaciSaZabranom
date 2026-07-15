@@ -3,12 +3,7 @@ package com.navijacisazabranom.app.sync
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.navijacisazabranom.app.data.hns.IndeksStanje
 import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
@@ -45,24 +40,8 @@ class IndeksiranjeWorker @AssistedInject constructor(
         )
     }
 
-    companion object {
-        private const val TAG = "IndeksiranjeWorker"
-        private const val MAX_POKUSAJA = 3
-        private const val WORK_NAME = "izgradnja-indeksa-klubova"
-
-        /** KEEP: ako izgradnja već traje, ne pokreće se druga. */
-        fun pokreni(workManager: WorkManager) {
-            workManager.enqueueUniqueWork(
-                WORK_NAME,
-                ExistingWorkPolicy.KEEP,
-                OneTimeWorkRequestBuilder<IndeksiranjeWorker>()
-                    .setConstraints(
-                        Constraints.Builder()
-                            .setRequiredNetworkType(NetworkType.CONNECTED)
-                            .build(),
-                    )
-                    .build(),
-            )
-        }
+    private companion object {
+        const val TAG = "IndeksiranjeWorker"
+        const val MAX_POKUSAJA = 3
     }
 }

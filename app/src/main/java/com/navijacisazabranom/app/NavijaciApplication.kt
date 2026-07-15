@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.navijacisazabranom.app.notifikacije.NotifikacijaHelper
+import com.navijacisazabranom.app.sync.IndeksiranjeScheduler
 import com.navijacisazabranom.app.sync.SinkronizacijaScheduler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -20,6 +21,8 @@ class NavijaciApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         NotifikacijaHelper(this).kreirajKanal()
-        SinkronizacijaScheduler.zakazi(WorkManager.getInstance(this))
+        val workManager = WorkManager.getInstance(this)
+        SinkronizacijaScheduler.zakazi(workManager)
+        IndeksiranjeScheduler.zakazi(workManager)
     }
 }
