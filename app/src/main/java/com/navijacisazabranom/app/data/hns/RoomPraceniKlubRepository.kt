@@ -10,6 +10,7 @@ import com.navijacisazabranom.app.notifikacije.NotifikacijaHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 class RoomPraceniKlubRepository @Inject constructor(
@@ -109,6 +110,21 @@ class RoomPraceniKlubRepository @Inject constructor(
             sljedeca = sljedeca,
             vecernjiPodsjetnik = postavkeRepository.getVecernjiPodsjetnik(),
         )
+        prikaziPropustenDanUtakmice(praceniKlub.klubNaziv, sljedeca)
+    }
+
+    /**
+     * Ako je sljedeća utakmica danas a jutarnji podsjetnik (9:00) je prošao (npr.
+     * uređaj je spavao pa alarm nije zakazan), pokaži obavijest odmah pri otvaranju
+     * aplikacije — jednom po utakmici (pamti se zadnja notificirana).
+     */
+    private suspend fun prikaziPropustenDanUtakmice(klubNaziv: String, sljedeca: Utakmica?) {
+        if (sljedeca == null || sljedeca.datum != LocalDate.now()) return
+        if (LocalTime.now().hour < JUTARNJI_SAT) return
+        if (postavkeRepository.getZadnjaNotificiranaUtakmica() == sljedeca.id) return
+
+        notifikacijaHelper.prikaziDanUtakmice(klubNaziv, sljedeca)
+        postavkeRepository.postaviZadnjaNotificiranaUtakmica(sljedeca.id)
     }
 
     private fun PraceniKlubEntity.toDomain() =
@@ -148,5 +164,6 @@ class RoomPraceniKlubRepository @Inject constructor(
 
     private companion object {
         const val TAG = "PraceniKlubRepo"
+        const val JUTARNJI_SAT = 9
     }
 }

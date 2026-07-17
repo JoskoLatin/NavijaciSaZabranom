@@ -19,4 +19,8 @@ interface PostavkeRepository {
     /** Je li HNS logo okrenut naopako (easter egg triple-tap); trajno se pamti. */
     fun observeHnsNaopako(): Flow<Boolean>
     suspend fun preokreniHnsLogo()
+
+    /** ID utakmice za koju je već prikazan trenutačni podsjetnik na dan utakmice (da se ne ponavlja). */
+    suspend fun getZadnjaNotificiranaUtakmica(): String?
+    suspend fun postaviZadnjaNotificiranaUtakmica(utakmicaId: String)
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -48,10 +49,18 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[HNS_NAOPAKO] = !(it[HNS_NAOPAKO] ?: false) }
     }
 
+    override suspend fun getZadnjaNotificiranaUtakmica(): String? =
+        context.postavkeDataStore.data.map { it[ZADNJA_NOTIFICIRANA] }.first()
+
+    override suspend fun postaviZadnjaNotificiranaUtakmica(utakmicaId: String) {
+        context.postavkeDataStore.edit { it[ZADNJA_NOTIFICIRANA] = utakmicaId }
+    }
+
     private companion object {
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
         val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
         val INDEKS_VERZIJA = intPreferencesKey("indeks_verzija")
         val HNS_NAOPAKO = booleanPreferencesKey("hns_naopako")
+        val ZADNJA_NOTIFICIRANA = stringPreferencesKey("zadnja_notificirana_utakmica")
     }
 }

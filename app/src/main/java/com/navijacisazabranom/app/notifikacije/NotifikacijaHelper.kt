@@ -61,6 +61,21 @@ class NotifikacijaHelper @Inject constructor(
         prikazi(ID_PROMJENA_TERMINA, naslov, tekst)
     }
 
+    /**
+     * Trenutačni podsjetnik na dan utakmice — kad se app otvori na dan utakmice
+     * a jutarnji alarm je propušten (npr. uređaj je spavao). Isti ID kao jutarnji
+     * alarm (NotifikacijaReceiver) pa se ne gomila.
+     */
+    fun prikaziDanUtakmice(klubNaziv: String, utakmica: Utakmica) {
+        val vrijemeText = utakmica.vrijeme?.format(timeFormatter)
+            ?: context.getString(R.string.raspored_satnica_tbd)
+        prikazi(
+            ID_DAN_UTAKMICE,
+            context.getString(R.string.notifikacija_dan_utakmice_naslov, klubNaziv),
+            context.getString(R.string.notifikacija_dan_utakmice_tekst, vrijemeText),
+        )
+    }
+
     fun prikazi(id: Int, naslov: String, tekst: String) {
         val imaDozvolu = ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
             PackageManager.PERMISSION_GRANTED
@@ -81,6 +96,9 @@ class NotifikacijaHelper @Inject constructor(
     companion object {
         const val KANAL_ID = "podsjetnici_javljanje"
         const val ID_PROMJENA_TERMINA = 2001
+
+        /** Isti kao REQUEST_CODE_DAN_UTAKMICE u AlarmScheduleru (jutarnji alarm). */
+        const val ID_DAN_UTAKMICE = 1001
 
         private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")
         private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
