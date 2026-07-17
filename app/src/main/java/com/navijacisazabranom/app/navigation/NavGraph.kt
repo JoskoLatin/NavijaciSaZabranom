@@ -85,6 +85,11 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                         popUpTo(Screen.Profil.route) { inclusive = true }
                     }
                 },
+                onOdjava = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
             )
         }
         composable(Screen.Trazilica.route) {

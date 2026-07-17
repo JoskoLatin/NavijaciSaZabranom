@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,6 +55,7 @@ fun ProfilScreen(
     onOtvoriRaspored: (natjecanjeId: String, klubId: String) -> Unit,
     onReprezentacija: () -> Unit,
     onNemaKluba: () -> Unit,
+    onOdjava: () -> Unit,
     viewModel: ProfilViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -69,6 +71,7 @@ fun ProfilScreen(
             onOtvoriRaspored = { onOtvoriRaspored(uiState.klub!!.natjecanjeId, uiState.klub!!.klubId) },
             onReprezentacija = onReprezentacija,
             onPreokreniHns = viewModel::preokreniHns,
+            onOdjava = { viewModel.odjava(onOdjava) },
         )
     }
 }
@@ -82,6 +85,7 @@ private fun ProfilContent(
     onOtvoriRaspored: () -> Unit,
     onReprezentacija: () -> Unit,
     onPreokreniHns: () -> Unit,
+    onOdjava: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -118,6 +122,15 @@ private fun ProfilContent(
                 .padding(top = 12.dp),
         ) {
             Text(text = stringResource(R.string.profil_promijeni_klub))
+        }
+
+        TextButton(
+            onClick = onOdjava,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+        ) {
+            Text(text = stringResource(R.string.action_odjava))
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -246,6 +259,7 @@ private fun ProfilContentPreview() {
             onOtvoriRaspored = {},
             onReprezentacija = {},
             onPreokreniHns = {},
+            onOdjava = {},
         )
     }
 }

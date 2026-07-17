@@ -2,6 +2,7 @@ package com.navijacisazabranom.app.ui.screens.profil
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.navijacisazabranom.app.data.auth.AuthRepository
 import com.navijacisazabranom.app.data.hns.PraceniKlub
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
 import com.navijacisazabranom.app.data.hns.Utakmica
@@ -31,6 +32,7 @@ data class ProfilUiState(
 class ProfilViewModel @Inject constructor(
     private val praceniKlubRepository: PraceniKlubRepository,
     private val postavkeRepository: PostavkeRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<ProfilUiState> = combine(
@@ -63,6 +65,11 @@ class ProfilViewModel @Inject constructor(
 
     fun preokreniHns() {
         viewModelScope.launch { postavkeRepository.preokreniHnsLogo() }
+    }
+
+    fun odjava(onOdjavljen: () -> Unit) {
+        authRepository.odjava()
+        onOdjavljen()
     }
 
     private fun sljedecaUtakmica(utakmice: List<Utakmica>): Utakmica? {
