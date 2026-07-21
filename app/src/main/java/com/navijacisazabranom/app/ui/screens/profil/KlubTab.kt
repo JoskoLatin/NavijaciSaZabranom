@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,11 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import coil.compose.AsyncImage
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.PraceniKlub
@@ -63,8 +67,19 @@ fun KlubTab(
     onPreokreniHns: () -> Unit,
     onDodajSezonu: () -> Unit,
     onPorukaPrikazana: () -> Unit,
+    onProvjeriKalendar: () -> Unit,
 ) {
     val context = LocalContext.current
+
+    // Korisnik je termine mogao obrisati u kalendaru dok je aplikacija bila u pozadini.
+    val vlasnikZivotnogCiklusa = LocalLifecycleOwner.current
+    DisposableEffect(vlasnikZivotnogCiklusa) {
+        val promatrac = LifecycleEventObserver { _, dogadjaj ->
+            if (dogadjaj == Lifecycle.Event.ON_RESUME) onProvjeriKalendar()
+        }
+        vlasnikZivotnogCiklusa.lifecycle.addObserver(promatrac)
+        onDispose { vlasnikZivotnogCiklusa.lifecycle.removeObserver(promatrac) }
+    }
 
     val dozvolaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),

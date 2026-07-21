@@ -87,6 +87,7 @@ fun ProfilScreen(
                         onPreokreniHns = viewModel::preokreniHns,
                         onDodajSezonu = viewModel::dodajSezonuUKalendar,
                         onPorukaPrikazana = viewModel::ocistiPoruku,
+                        onProvjeriKalendar = viewModel::provjeriKalendar,
                     )
 
                     Tab.UPUTE -> UputeTab()

@@ -1,6 +1,9 @@
 package com.navijacisazabranom.app.ui.screens.profil
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navijacisazabranom.app.R
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -35,10 +39,11 @@ data class ProfilUiState(
     val email: String? = null,
     /** Sve nadolazeće utakmice (domaće + europske), kronološki. */
     val nadolazece: List<Utakmica> = emptyList(),
-    val uKalendaru: Set<String> = emptySet(),
+    /** Id utakmice → id događaja u kalendaru, za već upisane termine. */
+    val uKalendaru: Map<String, Long> = emptyMap(),
     val porukaKalendar: String? = null,
 ) {
-    /** Termini koje korisnik još nije spremio u kalendar (npr. nakon europskog ždrijeba). */
+    /** Termini kojih nema u kalendaru — novi (npr. nakon ždrijeba) ili korisnikom obrisani. */
     val noviTermini: Int get() = nadolazece.count { it.id !in uKalendaru }
 }
 
@@ -85,13 +90,46 @@ class ProfilViewModel @Inject constructor(
             val klub = praceniKlubRepository.getPraceniKlub() ?: return@launch
             praceniKlubRepository.osvjeziUtakmice(klub.natjecanjeId)
         }
+        provjeriKalendar()
+    }
+
+    /**
+     * Briše zapise o terminima kojih više nema u kalendaru (korisnik ih je obrisao ondje),
+     * da ih aplikacija ponovno ponudi za dodavanje umjesto da tvrdi da su već upisani.
+     */
+    fun provjeriKalendar() {
+        viewModelScope.launch {
+            if (!smijeCitatiKalendar()) return@launch
+            val zapisi = postavkeRepository.observeUKalendaru().first()
+            if (zapisi.isEmpty()) return@launch
+
+            withContext(Dispatchers.IO) {
+                KalendarPomocnik.postojeciTermini(context, zapisi.values.toSet())
+            }.onSuccess { postojeci ->
+                val preostali = zapisi.filterValues { it in postojeci }.keys
+                if (preostali.size != zapisi.size) postavkeRepository.zadrziUKalendaru(preostali)
+            }
+        }
     }
 
     /** Upisuje sve nadolazeće termine koji još nisu u kalendaru (dozvola se traži u UI-ju). */
     fun dodajSezonuUKalendar() {
         viewModelScope.launch {
+            // Provjera prije upisa: bez nje bi obrisani termini vrijedili kao već dodani.
+            if (smijeCitatiKalendar()) {
+                val zapisi = postavkeRepository.observeUKalendaru().first()
+                if (zapisi.isNotEmpty()) {
+                    withContext(Dispatchers.IO) {
+                        KalendarPomocnik.postojeciTermini(context, zapisi.values.toSet())
+                    }.onSuccess { postojeci ->
+                        postavkeRepository.zadrziUKalendaru(zapisi.filterValues { it in postojeci }.keys)
+                    }
+                }
+            }
+
             val stanje = uiState.value
-            val zaDodati = stanje.nadolazece.filter { it.id !in stanje.uKalendaru }
+            val vec = postavkeRepository.observeUKalendaru().first()
+            val zaDodati = stanje.nadolazece.filter { it.id !in vec }
             if (zaDodati.isEmpty()) {
                 poruka.value = context.getString(R.string.kalendar_nema_novih)
                 return@launch
@@ -100,13 +138,17 @@ class ProfilViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 KalendarPomocnik.dodajSve(context, zaDodati, context.getString(R.string.kalendar_opis))
             }
-                .onSuccess { broj ->
-                    postavkeRepository.zabiljeziUKalendaru(zaDodati.map { it.id }.toSet())
-                    poruka.value = context.getString(R.string.kalendar_dodano, broj)
+                .onSuccess { zapisi ->
+                    postavkeRepository.zabiljeziUKalendaru(zapisi)
+                    poruka.value = context.getString(R.string.kalendar_dodano, zapisi.size)
                 }
                 .onFailure { poruka.value = context.getString(R.string.kalendar_greska) }
         }
     }
+
+    private fun smijeCitatiKalendar(): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) ==
+            PackageManager.PERMISSION_GRANTED
 
     fun ocistiPoruku() {
         poruka.value = null
@@ -132,7 +174,7 @@ class ProfilViewModel @Inject constructor(
     private data class Ulaz(
         val klub: PraceniKlub?,
         val naopako: Boolean,
-        val uKalendaru: Set<String>,
+        val uKalendaru: Map<String, Long>,
         val poruka: String?,
     )
 }

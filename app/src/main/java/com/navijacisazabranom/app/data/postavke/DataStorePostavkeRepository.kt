@@ -57,16 +57,37 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[ZADNJA_NOTIFICIRANA] = utakmicaId }
     }
 
-    override fun observeUKalendaru(): Flow<Set<String>> =
-        context.postavkeDataStore.data.map { it[U_KALENDARU] ?: emptySet() }
+    override fun observeUKalendaru(): Flow<Map<String, Long>> =
+        context.postavkeDataStore.data.map { dekodiraj(it[U_KALENDARU]) }
 
-    override suspend fun zabiljeziUKalendaru(utakmicaIds: Set<String>) {
+    override suspend fun zabiljeziUKalendaru(zapisi: Map<String, Long>) {
         context.postavkeDataStore.edit {
-            it[U_KALENDARU] = (it[U_KALENDARU] ?: emptySet()) + utakmicaIds
+            it[U_KALENDARU] = kodiraj(dekodiraj(it[U_KALENDARU]) + zapisi)
         }
     }
 
+    override suspend fun zadrziUKalendaru(utakmicaIds: Set<String>) {
+        context.postavkeDataStore.edit {
+            val zadrzani = dekodiraj(it[U_KALENDARU]).filterKeys { id -> id in utakmicaIds }
+            it[U_KALENDARU] = kodiraj(zadrzani)
+        }
+    }
+
+    /** Zapis para je "idUtakmice|idDogadjaja" — id utakmice nikad ne sadrži uspravnu crtu. */
+    private fun kodiraj(zapisi: Map<String, Long>): Set<String> =
+        zapisi.map { (utakmicaId, dogadjajId) -> "$utakmicaId$RAZDJELNIK$dogadjajId" }.toSet()
+
+    private fun dekodiraj(zapisi: Set<String>?): Map<String, Long> =
+        zapisi.orEmpty().mapNotNull { zapis ->
+            val granica = zapis.lastIndexOf(RAZDJELNIK)
+            if (granica <= 0) return@mapNotNull null
+            val dogadjajId = zapis.substring(granica + 1).toLongOrNull() ?: return@mapNotNull null
+            zapis.substring(0, granica) to dogadjajId
+        }.toMap()
+
     private companion object {
+        const val RAZDJELNIK = '|'
+
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
         val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
         val INDEKS_VERZIJA = intPreferencesKey("indeks_verzija")

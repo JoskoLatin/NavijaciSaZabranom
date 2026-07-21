@@ -44,20 +44,46 @@ object KalendarPomocnik {
 
     /**
      * Upisuje više termina odjednom izravno u kalendar (traži dozvolu WRITE_CALENDAR).
-     * Vraća broj stvarno upisanih termina.
+     * Vraća mapu id utakmice → id događaja u kalendaru, da se poslije može provjeriti
+     * je li korisnik termin u međuvremenu obrisao.
      */
-    fun dodajSve(context: Context, utakmice: List<Utakmica>, opis: String): Result<Int> = runCatching {
-        val kalendarId = pronadjiZapisiviKalendar(context)
-            ?: error("Nije pronađen kalendar u koji se može pisati")
+    fun dodajSve(context: Context, utakmice: List<Utakmica>, opis: String): Result<Map<String, Long>> =
+        runCatching {
+            val kalendarId = pronadjiZapisiviKalendar(context)
+                ?: error("Nije pronađen kalendar u koji se može pisati")
 
-        var dodano = 0
-        utakmice.forEach { utakmica ->
-            val vrijednosti = vrijednostiZaUpis(utakmica, kalendarId, opis)
-            if (context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, vrijednosti) != null) {
-                dodano++
+            val zapisi = mutableMapOf<String, Long>()
+            utakmice.forEach { utakmica ->
+                val vrijednosti = vrijednostiZaUpis(utakmica, kalendarId, opis)
+                val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, vrijednosti)
+                uri?.lastPathSegment?.toLongOrNull()?.let { zapisi[utakmica.id] = it }
             }
+            zapisi
         }
-        dodano
+
+    /**
+     * Od predanih id-jeva događaja vraća one koji još postoje u kalendaru. Korisnik
+     * termine može obrisati izravno u kalendaru, pa se na to ne smijemo osloniti na
+     * ono što smo mi zabilježili pri upisu.
+     */
+    fun postojeciTermini(context: Context, idjeviDogadjaja: Set<Long>): Result<Set<Long>> = runCatching {
+        if (idjeviDogadjaja.isEmpty()) return@runCatching emptySet()
+
+        // Vrijednosti su Long iz baze pa ih je sigurno ugraditi izravno u uvjet.
+        val uvjet = "${CalendarContract.Events._ID} IN (${idjeviDogadjaja.joinToString(",")})" +
+            " AND ${CalendarContract.Events.DELETED} = 0"
+
+        val postojeci = mutableSetOf<Long>()
+        context.contentResolver.query(
+            CalendarContract.Events.CONTENT_URI,
+            arrayOf(CalendarContract.Events._ID),
+            uvjet,
+            null,
+            null,
+        )?.use { kursor ->
+            while (kursor.moveToNext()) postojeci.add(kursor.getLong(0))
+        }
+        postojeci
     }
 
     private fun vrijednostiZaUpis(utakmica: Utakmica, kalendarId: Long, opis: String) =
