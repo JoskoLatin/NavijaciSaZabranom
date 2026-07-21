@@ -5,13 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- Precizni alarmi: USE_EXACT_ALARM (API 33+) se dodjeljuje automatski
-         aplikacijama kojima je podsjetnik temeljna funkcija; SCHEDULE_EXACT_ALARM
-         pokriva API 31-32 gdje USE_EXACT_ALARM ne postoji. -->
-    <uses-permission
-        android:name="android.permission.SCHEDULE_EXACT_ALARM"
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Namjerno bez USE_EXACT_ALARM/SCHEDULE_EXACT_ALARM: Play ih dopušta samo
+         budilicama i kalendarima. Podsjetnici idu u 09:00 i 20:00 pa je odstupanje
+         od nekoliko minuta bezopasno; koristimo setAndAllowWhileIdle. -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- Upis cijele sezone u korisnikov kalendar (lokalno na uređaju; ništa se ne šalje). -->
