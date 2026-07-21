@@ -46,6 +46,9 @@
     <string name="profil_nema_sljedece">Nema nadolazećih utakmica u rasporedu.</string>
     <string name="profil_cijeli_raspored">Prikaži cijeli raspored</string>
     <string name="profil_promijeni_klub">Promijeni klub</string>
+    <string name="action_dodaj_u_kalendar">Dodaj u kalendar</string>
+    <string name="kalendar_opis">Na dan ove utakmice obavezni ste javiti se nadležnoj policijskoj postaji.</string>
+    <string name="kalendar_nema_aplikacije">Nije pronađena aplikacija kalendara.</string>
     <string name="profil_reprezentacija">Raspored reprezentacije</string>
 
     <string name="reprezentacija_title">Raspored reprezentacije</string>

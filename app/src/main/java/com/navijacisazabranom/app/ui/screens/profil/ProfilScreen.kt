@@ -39,6 +39,7 @@ import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.PraceniKlub
 import com.navijacisazabranom.app.data.hns.Utakmica
 import com.navijacisazabranom.app.ui.components.CenteredBox
+import com.navijacisazabranom.app.ui.components.DodajUKalendarGumb
 import com.navijacisazabranom.app.ui.theme.NavijaciTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -188,6 +189,12 @@ private fun SljedecaUtakmicaKartica(
                 sljedeca.stadion?.let { stadion ->
                     Text(text = stadion, style = MaterialTheme.typography.bodySmall)
                 }
+                // Kalendar drži podsjetnik pouzdanije od alarma na uređajima
+                // koji agresivno gase pozadinske aplikacije.
+                DodajUKalendarGumb(
+                    utakmica = sljedeca,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
             Text(
                 text = stringResource(R.string.profil_cijeli_raspored),
