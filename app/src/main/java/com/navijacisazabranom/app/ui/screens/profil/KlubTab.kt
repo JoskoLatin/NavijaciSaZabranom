@@ -42,7 +42,6 @@ import coil.compose.AsyncImage
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.PraceniKlub
 import com.navijacisazabranom.app.data.hns.Utakmica
-import com.navijacisazabranom.app.ui.components.DodajUKalendarGumb
 import java.time.format.DateTimeFormatter
 
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")
@@ -110,6 +109,15 @@ fun KlubTab(
             modifier = Modifier.padding(top = 12.dp),
         )
 
+        OutlinedButton(
+            onClick = onPromijeniKlub,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+        ) {
+            Text(text = stringResource(R.string.profil_promijeni_klub))
+        }
+
         SljedecaUtakmicaKartica(
             sljedeca = sljedeca,
             onClick = onOtvoriRaspored,
@@ -126,15 +134,6 @@ fun KlubTab(
             },
             modifier = Modifier.padding(top = 12.dp),
         )
-
-        OutlinedButton(
-            onClick = onPromijeniKlub,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-        ) {
-            Text(text = stringResource(R.string.profil_promijeni_klub))
-        }
 
         Spacer(modifier = Modifier.height(28.dp))
 
@@ -219,10 +218,6 @@ private fun SljedecaUtakmicaKartica(
                 sljedeca.stadion?.let { stadion ->
                     Text(text = stadion, style = MaterialTheme.typography.bodySmall)
                 }
-                DodajUKalendarGumb(
-                    utakmica = sljedeca,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
             }
             Text(
                 text = stringResource(R.string.profil_cijeli_raspored),
