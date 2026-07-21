@@ -14,6 +14,10 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <!-- Upis cijele sezone u korisnikov kalendar (lokalno na uređaju; ništa se ne šalje). -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
     <!-- Provjera postoji li MIUI ekran za autostart (package visibility, API 30+). -->
     <queries>
         <package android:name="com.miui.securitycenter" />

@@ -23,4 +23,8 @@ interface PostavkeRepository {
     /** ID utakmice za koju je već prikazan trenutačni podsjetnik na dan utakmice (da se ne ponavlja). */
     suspend fun getZadnjaNotificiranaUtakmica(): String?
     suspend fun postaviZadnjaNotificiranaUtakmica(utakmicaId: String)
+
+    /** ID-jevi utakmica već upisanih u kalendar — spriječava duplikate i otkriva nove termine. */
+    fun observeUKalendaru(): Flow<Set<String>>
+    suspend fun zabiljeziUKalendaru(utakmicaIds: Set<String>)
 }

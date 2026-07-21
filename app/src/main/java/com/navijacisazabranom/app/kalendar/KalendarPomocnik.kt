@@ -1,5 +1,7 @@
 package com.navijacisazabranom.app.kalendar
 
+import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.provider.CalendarContract
 import com.navijacisazabranom.app.data.hns.Utakmica
@@ -38,5 +40,74 @@ object KalendarPomocnik {
             putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, cijeliDan)
             utakmica.stadion?.let { putExtra(CalendarContract.Events.EVENT_LOCATION, it) }
         }
+    }
+
+    /**
+     * Upisuje više termina odjednom izravno u kalendar (traži dozvolu WRITE_CALENDAR).
+     * Vraća broj stvarno upisanih termina.
+     */
+    fun dodajSve(context: Context, utakmice: List<Utakmica>, opis: String): Result<Int> = runCatching {
+        val kalendarId = pronadjiZapisiviKalendar(context)
+            ?: error("Nije pronađen kalendar u koji se može pisati")
+
+        var dodano = 0
+        utakmice.forEach { utakmica ->
+            val vrijednosti = vrijednostiZaUpis(utakmica, kalendarId, opis)
+            if (context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, vrijednosti) != null) {
+                dodano++
+            }
+        }
+        dodano
+    }
+
+    private fun vrijednostiZaUpis(utakmica: Utakmica, kalendarId: Long, opis: String) =
+        ContentValues().apply {
+            put(CalendarContract.Events.CALENDAR_ID, kalendarId)
+            put(CalendarContract.Events.TITLE, "${utakmica.domacinNaziv} — ${utakmica.gostNaziv}")
+            put(CalendarContract.Events.DESCRIPTION, opis)
+            utakmica.stadion?.let { put(CalendarContract.Events.EVENT_LOCATION, it) }
+
+            if (utakmica.vrijeme == null) {
+                // Cjelodnevni termin mora biti ponoć u UTC-u (zahtjev CalendarContracta).
+                val pocetak = utakmica.datum.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+                put(CalendarContract.Events.DTSTART, pocetak)
+                put(CalendarContract.Events.DTEND, pocetak + TimeUnit.DAYS.toMillis(1))
+                put(CalendarContract.Events.ALL_DAY, 1)
+                put(CalendarContract.Events.EVENT_TIMEZONE, "UTC")
+            } else {
+                val zona = ZoneId.systemDefault()
+                val pocetak = utakmica.datum.atTime(utakmica.vrijeme).atZone(zona).toInstant().toEpochMilli()
+                put(CalendarContract.Events.DTSTART, pocetak)
+                put(CalendarContract.Events.DTEND, pocetak + TimeUnit.MINUTES.toMillis(TRAJANJE_MINUTA))
+                put(CalendarContract.Events.EVENT_TIMEZONE, zona.id)
+            }
+        }
+
+    /** Prvi vidljivi kalendar u koji korisnik smije pisati; prednost ima primarni. */
+    private fun pronadjiZapisiviKalendar(context: Context): Long? {
+        val projekcija = arrayOf(
+            CalendarContract.Calendars._ID,
+            CalendarContract.Calendars.IS_PRIMARY,
+            CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
+            CalendarContract.Calendars.VISIBLE,
+        )
+        context.contentResolver.query(
+            CalendarContract.Calendars.CONTENT_URI, projekcija, null, null, null,
+        )?.use { kursor ->
+            var rezerva: Long? = null
+            while (kursor.moveToNext()) {
+                val id = kursor.getLong(0)
+                val primarni = kursor.getInt(1) == 1
+                val razinaPristupa = kursor.getInt(2)
+                val vidljiv = kursor.getInt(3) == 1
+                val smijePisati = razinaPristupa >= CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
+                if (smijePisati && vidljiv) {
+                    if (primarni) return id
+                    if (rezerva == null) rezerva = id
+                }
+            }
+            return rezerva
+        }
+        return null
     }
 }

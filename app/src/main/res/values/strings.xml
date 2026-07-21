@@ -49,6 +49,34 @@
     <string name="action_dodaj_u_kalendar">Dodaj u kalendar</string>
     <string name="kalendar_opis">Na dan ove utakmice obavezni ste javiti se nadležnoj policijskoj postaji.</string>
     <string name="kalendar_nema_aplikacije">Nije pronađena aplikacija kalendara.</string>
+
+    <string name="tab_profil">Profil</string>
+    <string name="tab_klub">Klub</string>
+    <string name="tab_upute">Upute</string>
+
+    <string name="profil_prijavljeni_kao">Prijavljeni ste kao</string>
+
+    <string name="kalendar_sezona_gumb">Dodaj cijelu sezonu u kalendar</string>
+    <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte cijelu sezonu u kalendar — podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>
+    <string name="kalendar_dodano">Dodano %1$d termina u kalendar.</string>
+    <string name="kalendar_nema_novih">Svi termini su već u kalendaru.</string>
+    <string name="kalendar_greska">Spremanje u kalendar nije uspjelo.</string>
+    <string name="kalendar_novi_termini">Objavljeni su novi termini (%1$d) kojih još nema u kalendaru — dodajte ih.</string>
+    <string name="kalendar_dozvola_odbijena">Bez dopuštenja za kalendar termini se ne mogu upisati.</string>
+
+    <string name="upute_naslov">Kako koristiti aplikaciju</string>
+    <string name="upute_zasto_naslov">Zašto dodati termine u kalendar</string>
+    <string name="upute_zasto_tekst">Podsjetnici iz aplikacije mogu izostati ako sustav ugasi aplikaciju u pozadini (osobito na Xiaomi/MIUI uređajima). Kalendar okida podsjetnike pouzdano, pa je najsigurnije termine imati i ondje.</string>
+    <string name="upute_kako_naslov">Kako dodati cijelu sezonu</string>
+    <string name="upute_kako_tekst">Na kartici Klub tapnite „Dodaj cijelu sezonu u kalendar" i dopustite pristup kalendaru. Svi nadolazeći termini (domaći i europski) upisat će se odjednom. Ponovni pritisak ne stvara duplikate.</string>
+    <string name="upute_podsjetnik_naslov">Postavljanje podsjetnika</string>
+    <string name="upute_podsjetnik_tekst">Otvorite termin u aplikaciji kalendara i postavite podsjetnik kakav želite — npr. dan prije i ujutro na dan utakmice.</string>
+    <string name="upute_novi_naslov">Novi termini</string>
+    <string name="upute_novi_tekst">Kad se objave novi termini (npr. nakon europskog ždrijeba), na kartici Klub pojavit će se poruka da ih možete dodati u kalendar.</string>
+    <string name="upute_pouzdanost_naslov">Podsjetnici iz aplikacije</string>
+    <string name="upute_pouzdanost_tekst">Ako želite i podsjetnike iz same aplikacije, dopustite joj rad u pozadini: isključite optimizaciju baterije i uključite automatsko pokretanje (Autostart). Te prečace nudi kartica na ekranu Raspored.</string>
+    <string name="upute_svrha_naslov">Svrha aplikacije</string>
+    <string name="upute_svrha_tekst">Aplikacija je alat za poštivanje zakonske obveze javljanja nadležnoj policijskoj postaji na dan utakmice vašeg kluba. Zabrana vrijedi i za europske utakmice, pa su i one uključene u raspored.</string>
     <string name="profil_reprezentacija">Raspored reprezentacije</string>
 
     <string name="reprezentacija_title">Raspored reprezentacije</string>
