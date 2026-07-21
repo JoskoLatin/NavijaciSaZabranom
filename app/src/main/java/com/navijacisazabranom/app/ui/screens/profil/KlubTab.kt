@@ -10,10 +10,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -86,66 +84,74 @@ fun KlubTab(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        AsyncImage(
-            model = klub.grbUrl,
-            contentDescription = null,
-            placeholder = painterResource(R.drawable.ic_klub_placeholder),
-            error = painterResource(R.drawable.ic_klub_placeholder),
-            fallback = painterResource(R.drawable.ic_klub_placeholder),
-            modifier = Modifier.size(80.dp),
-        )
-        Text(
-            text = klub.klubNaziv,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(top = 6.dp),
-        )
-
-        OutlinedButton(
-            onClick = onPromijeniKlub,
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Sadržaj kluba skrola samo ako mu zafali mjesta; HNS sekcija ostaje pribijena uz tabove.
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp),
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = stringResource(R.string.profil_promijeni_klub))
+            AsyncImage(
+                model = klub.grbUrl,
+                contentDescription = null,
+                placeholder = painterResource(R.drawable.ic_klub_placeholder),
+                error = painterResource(R.drawable.ic_klub_placeholder),
+                fallback = painterResource(R.drawable.ic_klub_placeholder),
+                modifier = Modifier.size(80.dp),
+            )
+            Text(
+                text = klub.klubNaziv,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(top = 6.dp),
+            )
+
+            OutlinedButton(
+                onClick = onPromijeniKlub,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+            ) {
+                Text(text = stringResource(R.string.profil_promijeni_klub))
+            }
+
+            SljedecaUtakmicaKartica(
+                sljedeca = sljedeca,
+                onClick = onOtvoriRaspored,
+                modifier = Modifier.padding(top = 10.dp),
+            )
+
+            SezonaUKalendarKartica(
+                noviTermini = noviTermini,
+                onDodaj = {
+                    val imaDozvolu = DOZVOLE_KALENDAR.all {
+                        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                    }
+                    if (imaDozvolu) onDodajSezonu() else dozvolaLauncher.launch(DOZVOLE_KALENDAR)
+                },
+                modifier = Modifier.padding(top = 10.dp),
+            )
         }
 
-        SljedecaUtakmicaKartica(
-            sljedeca = sljedeca,
-            onClick = onOtvoriRaspored,
-            modifier = Modifier.padding(top = 10.dp),
-        )
-
-        SezonaUKalendarKartica(
-            noviTermini = noviTermini,
-            onDodaj = {
-                val imaDozvolu = DOZVOLE_KALENDAR.all {
-                    ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-                }
-                if (imaDozvolu) onDodajSezonu() else dozvolaLauncher.launch(DOZVOLE_KALENDAR)
-            },
-            modifier = Modifier.padding(top = 10.dp),
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        HnsLogo(naopako = hnsNaopako, onPreokreni = onPreokreniHns)
-        // Otvaranje rasporeda reprezentacije je na tekstu (logo je rezerviran za easter egg).
-        Text(
-            text = stringResource(R.string.profil_reprezentacija),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
+        Column(
             modifier = Modifier
-                .padding(top = 2.dp)
-                .clickable(onClick = onReprezentacija)
-                .padding(6.dp),
-        )
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            HnsLogo(naopako = hnsNaopako, onPreokreni = onPreokreniHns)
+            // Otvaranje rasporeda reprezentacije je na tekstu (logo je rezerviran za easter egg).
+            Text(
+                text = stringResource(R.string.profil_reprezentacija),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .clickable(onClick = onReprezentacija)
+                    .padding(6.dp),
+            )
+        }
     }
 }
 
