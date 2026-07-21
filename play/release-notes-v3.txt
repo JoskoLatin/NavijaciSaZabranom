@@ -1,0 +1,8 @@
+Novo u verziji 1.1:
+
+• Europske utakmice – raspored sada uključuje i UEFA natjecanja, jer obveza javljanja vrijedi i za njih.
+• Cijela sezona u kalendar jednim pritiskom – podsjetnici tada rade pouzdano i kad sustav ugasi aplikaciju u pozadini.
+• Termine obrisane u kalendaru aplikacija prepozna i ponudi ponovno.
+• Podsjetnik na dan utakmice prikaže se i ako je propušten.
+• Nove kartice: Profil, Klub i Upute.
+• Odjava s računa.
