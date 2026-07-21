@@ -90,7 +90,7 @@ fun KlubTab(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
@@ -99,21 +99,19 @@ fun KlubTab(
             placeholder = painterResource(R.drawable.ic_klub_placeholder),
             error = painterResource(R.drawable.ic_klub_placeholder),
             fallback = painterResource(R.drawable.ic_klub_placeholder),
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .size(96.dp),
+            modifier = Modifier.size(80.dp),
         )
         Text(
             text = klub.klubNaziv,
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(top = 12.dp),
+            modifier = Modifier.padding(top = 6.dp),
         )
 
         OutlinedButton(
             onClick = onPromijeniKlub,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp),
+                .padding(top = 6.dp),
         ) {
             Text(text = stringResource(R.string.profil_promijeni_klub))
         }
@@ -121,7 +119,7 @@ fun KlubTab(
         SljedecaUtakmicaKartica(
             sljedeca = sljedeca,
             onClick = onOtvoriRaspored,
-            modifier = Modifier.padding(top = 20.dp),
+            modifier = Modifier.padding(top = 10.dp),
         )
 
         SezonaUKalendarKartica(
@@ -132,10 +130,10 @@ fun KlubTab(
                 }
                 if (imaDozvolu) onDodajSezonu() else dozvolaLauncher.launch(DOZVOLE_KALENDAR)
             },
-            modifier = Modifier.padding(top = 12.dp),
+            modifier = Modifier.padding(top = 10.dp),
         )
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         HnsLogo(naopako = hnsNaopako, onPreokreni = onPreokreniHns)
         // Otvaranje rasporeda reprezentacije je na tekstu (logo je rezerviran za easter egg).
@@ -144,9 +142,9 @@ fun KlubTab(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top = 2.dp)
                 .clickable(onClick = onReprezentacija)
-                .padding(8.dp),
+                .padding(6.dp),
         )
     }
 }
@@ -245,7 +243,7 @@ private fun HnsLogo(naopako: Boolean, onPreokreni: () -> Unit) {
         model = R.drawable.ic_hns,
         contentDescription = stringResource(R.string.profil_reprezentacija),
         modifier = Modifier
-            .size(72.dp)
+            .size(60.dp)
             .rotate(kut)
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
