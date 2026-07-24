@@ -63,6 +63,7 @@
     <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte cijelu sezonu u kalendar — podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>
     <string name="kalendar_dodano">Dodano %1$d termina u kalendar.</string>
     <string name="kalendar_nema_novih">Svi termini su već u kalendaru.</string>
+    <string name="kalendar_svi_dodani">Svi termini su dodani u kalendar.</string>
     <string name="kalendar_greska">Spremanje u kalendar nije uspjelo.</string>
     <string name="kalendar_novi_termini">Objavljeni su novi termini (%1$d) kojih još nema u kalendaru — dodajte ih.</string>
     <string name="kalendar_dozvola_odbijena">Bez dopuštenja za kalendar termini se ne mogu upisati.</string>

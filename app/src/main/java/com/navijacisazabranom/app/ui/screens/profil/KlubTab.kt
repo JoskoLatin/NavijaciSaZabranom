@@ -10,15 +10,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -139,6 +143,7 @@ fun KlubTab(
 
             SezonaUKalendarKartica(
                 noviTermini = noviTermini,
+                imaNadolazecih = sljedeca != null,
                 onDodaj = {
                     val imaDozvolu = DOZVOLE_KALENDAR.all {
                         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
@@ -173,9 +178,13 @@ fun KlubTab(
 @Composable
 private fun SezonaUKalendarKartica(
     noviTermini: Int,
+    imaNadolazecih: Boolean,
     onDodaj: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Kad su svi termini upisani, gumb nema što raditi — zamjenjuje ga potvrda.
+    val sveDodano = imaNadolazecih && noviTermini == 0
+
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -190,13 +199,33 @@ private fun SezonaUKalendarKartica(
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
-            Button(
-                onClick = onDodaj,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-            ) {
-                Text(text = stringResource(R.string.kalendar_sezona_gumb))
+            if (sveDodano) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 12.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Text(
+                        text = stringResource(R.string.kalendar_svi_dodani),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
+                }
+            } else {
+                Button(
+                    onClick = onDodaj,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                ) {
+                    Text(text = stringResource(R.string.kalendar_sezona_gumb))
+                }
             }
         }
     }
