@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.provider.CalendarContract
 import com.navijacisazabranom.app.data.hns.Utakmica
+import java.time.Duration
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
@@ -17,6 +18,12 @@ import java.util.concurrent.TimeUnit
 object KalendarPomocnik {
 
     private const val TRAJANJE_MINUTA = 120L
+
+    /** Sat u koji podsjetnik treba okinuti na dan utakmice. */
+    private const val PODSJETNIK_SAT = 9
+
+    /** Za utakmice prije 9:00 — podsjetnik sat vremena prije početka. */
+    private const val REZERVNI_PODSJETNIK_MINUTA = 60
 
     fun intentZaUtakmicu(utakmica: Utakmica, naslov: String, opis: String): Intent {
         val zona = ZoneId.systemDefault()
@@ -56,10 +63,42 @@ object KalendarPomocnik {
             utakmice.forEach { utakmica ->
                 val vrijednosti = vrijednostiZaUpis(utakmica, kalendarId, opis)
                 val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, vrijednosti)
-                uri?.lastPathSegment?.toLongOrNull()?.let { zapisi[utakmica.id] = it }
+                uri?.lastPathSegment?.toLongOrNull()?.let { dogadjajId ->
+                    zapisi[utakmica.id] = dogadjajId
+                    dodajPodsjetnik(context, dogadjajId, utakmica)
+                }
             }
             zapisi
         }
+
+    /**
+     * Podsjetnik u 9:00 na dan utakmice — ne oslanjamo se na zadani podsjetnik
+     * kalendara (obično 5 min prije početka), jer je za obvezu javljanja policiji
+     * potrebna obavijest ujutro, a ne pred samu utakmicu.
+     */
+    private fun dodajPodsjetnik(context: Context, dogadjajId: Long, utakmica: Utakmica) {
+        val vrijednosti = ContentValues().apply {
+            put(CalendarContract.Reminders.EVENT_ID, dogadjajId)
+            put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
+            put(CalendarContract.Reminders.MINUTES, minutaPrijePocetka(utakmica))
+        }
+        runCatching { context.contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, vrijednosti) }
+    }
+
+    /**
+     * Koliko minuta prije početka termina podsjetnik treba okinuti da padne u 9:00.
+     * Cjelodnevni termini počinju u ponoć pa je to negativna vrijednost (9 h nakon
+     * početka). Za utakmice prije 9:00 (npr. prijepodnevni termini na SP-u) nema
+     * smisla javljati nakon početka, pa se javlja sat vremena ranije.
+     */
+    private fun minutaPrijePocetka(utakmica: Utakmica): Int {
+        val vrijeme = utakmica.vrijeme ?: return -PODSJETNIK_SAT * 60
+        val minuta = Duration.between(
+            utakmica.datum.atTime(PODSJETNIK_SAT, 0),
+            utakmica.datum.atTime(vrijeme),
+        ).toMinutes()
+        return if (minuta > 0) minuta.toInt() else REZERVNI_PODSJETNIK_MINUTA
+    }
 
     /**
      * Od predanih id-jeva događaja vraća one koji još postoje u kalendaru. Korisnik
@@ -91,6 +130,7 @@ object KalendarPomocnik {
             put(CalendarContract.Events.CALENDAR_ID, kalendarId)
             put(CalendarContract.Events.TITLE, "${utakmica.domacinNaziv} — ${utakmica.gostNaziv}")
             put(CalendarContract.Events.DESCRIPTION, opis)
+            put(CalendarContract.Events.HAS_ALARM, 1)
             utakmica.stadion?.let { put(CalendarContract.Events.EVENT_LOCATION, it) }
 
             if (utakmica.vrijeme == null) {
