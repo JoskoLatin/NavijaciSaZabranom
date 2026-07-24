@@ -34,4 +34,8 @@ interface PostavkeRepository {
 
     /** Zadržava samo navedene utakmice — briše zapise za termine kojih više nema u kalendaru. */
     suspend fun zadrziUKalendaru(utakmicaIds: Set<String>)
+
+    /** Vrijeme zadnje promjene profilne slike (0 = nema slike); mijenja se i radi osvježavanja prikaza. */
+    fun observeProfilnaAzurirana(): Flow<Long>
+    suspend fun postaviProfilnaAzurirana(vrijeme: Long)
 }

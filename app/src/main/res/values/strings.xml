@@ -55,6 +55,9 @@
     <string name="tab_upute">Upute</string>
 
     <string name="profil_prijavljeni_kao">Prijavljeni ste kao</string>
+    <string name="profilna_dodaj">Dodajte sliku</string>
+    <string name="profilna_promijeni">Promijeni sliku</string>
+    <string name="profilna_greska">Slika se nije mogla spremiti.</string>
 
     <string name="kalendar_sezona_gumb">Dodaj cijelu sezonu u kalendar</string>
     <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte cijelu sezonu u kalendar — podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>

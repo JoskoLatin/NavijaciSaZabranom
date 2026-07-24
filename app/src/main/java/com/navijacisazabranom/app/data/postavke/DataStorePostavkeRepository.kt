@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -73,6 +74,13 @@ class DataStorePostavkeRepository @Inject constructor(
         }
     }
 
+    override fun observeProfilnaAzurirana(): Flow<Long> =
+        context.postavkeDataStore.data.map { it[PROFILNA_AZURIRANA] ?: 0L }
+
+    override suspend fun postaviProfilnaAzurirana(vrijeme: Long) {
+        context.postavkeDataStore.edit { it[PROFILNA_AZURIRANA] = vrijeme }
+    }
+
     /** Zapis para je "idUtakmice|idDogadjaja" — id utakmice nikad ne sadrži uspravnu crtu. */
     private fun kodiraj(zapisi: Map<String, Long>): Set<String> =
         zapisi.map { (utakmicaId, dogadjajId) -> "$utakmicaId$RAZDJELNIK$dogadjajId" }.toSet()
@@ -94,5 +102,6 @@ class DataStorePostavkeRepository @Inject constructor(
         val HNS_NAOPAKO = booleanPreferencesKey("hns_naopako")
         val ZADNJA_NOTIFICIRANA = stringPreferencesKey("zadnja_notificirana_utakmica")
         val U_KALENDARU = stringSetPreferencesKey("utakmice_u_kalendaru")
+        val PROFILNA_AZURIRANA = longPreferencesKey("profilna_azurirana")
     }
 }

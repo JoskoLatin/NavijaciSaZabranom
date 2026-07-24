@@ -3,6 +3,7 @@ package com.navijacisazabranom.app.ui.screens.profil
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
 import com.navijacisazabranom.app.data.hns.Utakmica
 import com.navijacisazabranom.app.data.postavke.PostavkeRepository
 import com.navijacisazabranom.app.kalendar.KalendarPomocnik
+import com.navijacisazabranom.app.profil.ProfilnaSlika
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +44,8 @@ data class ProfilUiState(
     /** Id utakmice → id događaja u kalendaru, za već upisane termine. */
     val uKalendaru: Map<String, Long> = emptyMap(),
     val porukaKalendar: String? = null,
+    /** Vrijeme zadnje promjene profilne slike; 0 = nema slike. Mijenja se i radi osvježavanja prikaza. */
+    val profilnaAzurirana: Long = 0L,
 ) {
     /** Termini kojih nema u kalendaru — novi (npr. nakon ždrijeba) ili korisnikom obrisani. */
     val noviTermini: Int get() = nadolazece.count { it.id !in uKalendaru }
@@ -63,7 +67,10 @@ class ProfilViewModel @Inject constructor(
         postavkeRepository.observeHnsNaopako(),
         postavkeRepository.observeUKalendaru(),
         poruka,
-    ) { klub, naopako, uKalendaru, poruka -> Ulaz(klub, naopako, uKalendaru, poruka) }
+        postavkeRepository.observeProfilnaAzurirana(),
+    ) { klub, naopako, uKalendaru, poruka, profilna ->
+        Ulaz(klub, naopako, uKalendaru, poruka, profilna)
+    }
         .flatMapLatest { ulaz ->
             if (ulaz.klub == null) {
                 flowOf(osnovnoStanje(ulaz))
@@ -158,6 +165,15 @@ class ProfilViewModel @Inject constructor(
         viewModelScope.launch { postavkeRepository.preokreniHnsLogo() }
     }
 
+    /** Kopira odabranu sliku u internu memoriju; vrijeme promjene osvježava prikaz. */
+    fun postaviProfilnuSliku(uri: Uri) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { ProfilnaSlika.spremi(context, uri) }
+                .onSuccess { postavkeRepository.postaviProfilnaAzurirana(System.currentTimeMillis()) }
+                .onFailure { poruka.value = context.getString(R.string.profilna_greska) }
+        }
+    }
+
     fun odjava(onOdjavljen: () -> Unit) {
         authRepository.odjava()
         onOdjavljen()
@@ -169,6 +185,7 @@ class ProfilViewModel @Inject constructor(
         email = authRepository.currentUser?.email,
         uKalendaru = ulaz.uKalendaru,
         porukaKalendar = ulaz.poruka,
+        profilnaAzurirana = ulaz.profilnaAzurirana,
     )
 
     private data class Ulaz(
@@ -176,5 +193,6 @@ class ProfilViewModel @Inject constructor(
         val naopako: Boolean,
         val uKalendaru: Map<String, Long>,
         val poruka: String?,
+        val profilnaAzurirana: Long,
     )
 }
