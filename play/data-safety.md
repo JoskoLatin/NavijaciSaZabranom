@@ -28,6 +28,19 @@ Ovo su odgovori za **App content → Data safety** u Google Play Console, uskla�
 - **Linked to user identity:** Da (vezano uz identifikator računa)
 - **Required or optional:** Required
 
+### Calendar → Calendar events → **NE prijavljuje se kao prikupljanje**
+*(aplikacija traži dozvole `READ_CALENDAR` i `WRITE_CALENDAR` za „Dodaj cijelu sezonu u kalendar")*
+- **Collected:** **NE** · **Shared:** **NE**
+- Termini se upisuju **lokalno u kalendar na uređaju**; ništa se ne šalje nama ni trećima.
+- Čitanje kalendara koristi se **samo** da se provjeri je li korisnik termin u međuvremenu obrisao (da se ne stvore duplikati).
+- Prema Play pravilima podatak koji **ne napušta uređaj nije „prikupljanje"**, pa u formularu za Calendar **ne označavaš ništa**.
+- Ako te konzola pita za obrazloženje dozvole: *„Upis termina utakmica u korisnikov kalendar na njegov zahtjev; podaci ostaju na uređaju."*
+
+### Photos and videos → Photos → **NE prijavljuje se kao prikupljanje**
+*(profilna slika na Profil tabu)*
+- **Collected:** **NE** · **Shared:** **NE**
+- Slika se bira **sistemskim biračem slika** (bez dozvole za galeriju) i kopira **u internu memoriju aplikacije**; ne šalje se nikamo.
+
 ### (Provjeri kroz Firebase tablicu) Device or other IDs / Approximate location
 Firebase Auth/Firestore mogu za rad koristiti IP adresu (gruba lokacija) i identifikatore uređaja. Prema Firebase tablici obično se prijavljuju kao **Collected, Not shared, App functionality**. Otvori gornji Firebase link i za Authentication + Firestore prepiši što navode — ako navode, dodaj te vrste.
 
@@ -48,3 +61,5 @@ Firebase Auth/Firestore mogu za rad koristiti IP adresu (gruba lokacija) i ident
 | Identifikator računa (uid) | Da | Ne | Funkcionalnost + statistika | Da |
 | Interakcija (odabir kluba) | Da | Ne | Statistika | Da |
 | (Firebase: IP/uređaj — provjeri) | vjer. Da | Ne | Funkcionalnost | ovisno |
+| **Kalendar (termini utakmica)** | **Ne** | **Ne** | ostaje na uređaju | — |
+| **Profilna slika** | **Ne** | **Ne** | ostaje na uređaju | — |

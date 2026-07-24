@@ -22,7 +22,9 @@ Kad izradite račun, prikupljamo vašu **email adresu** (ili podatke Google rač
 Kad odaberete klub koji pratite, bilježimo **koji je klub odabran**, **vrijeme odabira** i **identifikator vašeg računa**. Ove podatke koristimo u zbirnom obliku, radi statistike o tome koje klubove korisnici prate. Uz zapis se **ne sprema vaša email adresa**, no identifikator je tehnički povezan s vašim računom.
 
 **3. Podaci pohranjeni samo na vašem uređaju**
-Praćeni klub, preuzeti raspored i vaše postavke (npr. podsjetnici) spremaju se **lokalno na uređaju** i ne šalju se nama. Rasporede dohvaćamo s javnog izvora Hrvatskog nogometnog saveza; pritom se ne šalju vaši osobni podaci.
+Praćeni klub, preuzeti raspored, vaše postavke (npr. podsjetnici), **profilna slika** te **termini upisani u vaš kalendar** ostaju **isključivo na uređaju** i ne šalju se nama ni trećima. Rasporede dohvaćamo s javnog izvora Hrvatskog nogometnog saveza; pritom se ne šalju vaši osobni podaci.
+
+Ako odobrite pristup kalendaru, aplikacija u njega upisuje termine utakmica na vaš zahtjev, a kalendar čita samo kako bi provjerila jeste li neki termin obrisali (da ga ne upiše dvaput). Profilnu sliku birate sistemskim biračem slika i ona se kopira u memoriju aplikacije.
 
 ## Kako obrađujemo podatke
 
