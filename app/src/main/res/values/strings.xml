@@ -91,6 +91,8 @@
     <string name="upute_pouzdanost_tekst">Ako želite i podsjetnike iz same aplikacije, dopustite joj rad u pozadini: isključite optimizaciju baterije i uključite automatsko pokretanje (Autostart). Te prečace nudi kartica na ekranu Raspored.</string>
     <string name="upute_privatnost_naslov">Privatnost</string>
     <string name="upute_privatnost_tekst">Na uređaju ostaju praćeni klub, preuzeti raspored, profilna slika i termini u kalendaru. Izvan uređaja idu samo podaci vašeg računa za prijavu i podatak o tome koji je klub odabran, radi statistike. Rasporedi se preuzimaju s javnih izvora, bez slanja vaših podataka.</string>
+    <string name="upute_izvor_naslov">Izvorni kod i licenca</string>
+    <string name="upute_izvor_tekst">Aplikacija je otvorenog koda, objavljena pod licencom GNU GPL v3. Pritisnite ovdje za pregled izvornog koda na GitHubu. Aplikacija nije povezana s HNS-om, UEFA-om ni bilo kojim klubom niti od njih odobrena; svi znakovi i grbovi vlasništvo su svojih nositelja.</string>
     <string name="upute_odgovornost_naslov">Važno</string>
     <string name="upute_odgovornost_tekst">Aplikacija je pomoć u pamćenju, a ne službena obavijest ni zamjena za rješenje o zabrani. Rasporedi se preuzimaju s javnih izvora i mogu se promijeniti ili kasniti, pa termin prije javljanja provjerite i sami. Za obvezu javljanja i njezine uvjete mjerodavno je vaše rješenje i nadležna policijska postaja.</string>
     <string name="profil_reprezentacija">Raspored reprezentacije</string>

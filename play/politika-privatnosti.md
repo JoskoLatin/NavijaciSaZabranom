@@ -8,7 +8,7 @@ Ova politika objašnjava koje podatke aplikacija **Navijači sa zabranom** priku
 
 Aplikaciju razvija i podacima upravlja:
 
-- **[ime i prezime / naziv razvijatelja]**
+- **Joško Latin (Truss Tech)**
 - Kontakt: **navijacisazabranom@gmail.com**
 
 Za sva pitanja o privatnosti javite se na gornji email.
