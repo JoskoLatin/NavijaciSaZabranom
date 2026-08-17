@@ -90,3 +90,48 @@ app/src/main/java/com/navijacisazabranom/app/
 Praćeni klub, preuzeti raspored, profilna slika i termini u kalendaru ostaju na uređaju.
 Izvan uređaja idu samo podaci računa za prijavu (Firebase Authentication) i podatak o tome
 koji je klub odabran, radi statistike. Detaljno: [play/politika-privatnosti.md](play/politika-privatnosti.md).
+
+## Licenca
+
+Izvorni kod objavljen je pod **GNU General Public License v3.0** — vidi [LICENSE](LICENSE).
+Riječ je o copyleft licenci: tko distribuira izmijenjenu verziju, mora i nju objaviti pod
+istom licencom i učiniti izvorni kod dostupnim.
+
+### Dodatno dopuštenje (GPL v3, članak 7)
+
+Aplikacija se povezuje s Googleovim vlasničkim bibliotekama (Google Play services, Firebase
+SDK, Android SDK), koje nisu GPL-kompatibilne. Bez izričitog dopuštenja distribucija
+prevedene aplikacije bila bi u sukobu s GPL-om, pa nositelj autorskih prava daje sljedeće
+dodatno dopuštenje:
+
+> Kao iznimku prema članku 7. GNU GPL-a v3, nositelj autorskih prava daje dopuštenje za
+> povezivanje ovog programa s Googleovim vlasničkim bibliotekama (Google Play services,
+> Firebase SDK i Android SDK) te za distribuciju tako nastaloga kombiniranog djela. Ovo
+> dopuštenje vrijedi i za izmijenjene verzije programa, pod uvjetom da se zadrži.
+
+> As an additional permission under section 7 of the GNU GPL v3, the copyright holder grants
+> permission to link this program with Google's proprietary libraries (Google Play services,
+> Firebase SDK and the Android SDK), and to distribute the resulting combined work. This
+> permission also applies to modified versions of the program, provided this permission is
+> retained.
+
+### Sadržaj koji nije obuhvaćen licencom
+
+Licenca se odnosi **samo na izvorni kod ovog projekta**. Ne obuhvaća:
+
+- **Logotip HNS-a** (`app/src/main/res/drawable-nodpi/ic_hns.png`) — zaštićeni znak
+  Hrvatskog nogometnog saveza, korišten radi prepoznavanja. Nositelj projekta nije njegov
+  vlasnik i ne daje pravo na njegovo korištenje.
+- **Grbovi klubova** — ne nalaze se u repozitoriju; aplikacija ih dohvaća s javnih HNS-ovih
+  adresa u trenutku prikaza. Prava pripadaju klubovima.
+- **Podatke o rasporedima** — vlasništvo su izvora navedenih u odjeljku *Izvori podataka*.
+
+Aplikacija nije povezana s HNS-om, UEFA-om ni bilo kojim klubom niti od njih odobrena.
+
+### Uvjeti korištenja izvora podataka
+
+Opći uvjeti korištenja HNS-ovih web stranica (čl. 9) zabranjuju pohranu i kopiranje sadržaja
+za bilo koju svrhu **osim osobne uporabe**. Aplikacija je građena u skladu s tim: podatke
+dohvaća sam uređaj, za svog korisnika, i nigdje ne postoji središnja kopija podataka.
+Tko projekt koristi drukčije — osobito za poslužiteljsko prikupljanje ili preprodaju
+podataka — dužan je sam ishoditi suglasnost nositelja prava.
