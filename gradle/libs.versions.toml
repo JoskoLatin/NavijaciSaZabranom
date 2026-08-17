@@ -1,7 +1,7 @@
 [versions]
-agp = "8.6.1"
-kotlin = "1.9.20"
-composeCompiler = "1.5.4"
+agp = "8.9.1"
+kotlin = "1.9.25"
+composeCompiler = "1.5.15"
 composeBom = "2023.10.01"
 coreKtx = "1.12.0"
 lifecycle = "2.6.2"

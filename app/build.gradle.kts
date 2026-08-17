@@ -24,12 +24,12 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.navijacisazabranom.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.navijacisazabranom.app"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 9
         versionName = "1.2"
 
