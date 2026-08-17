@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,6 +72,8 @@ fun ProfilScreen(
         uiState.ucitava -> CenteredBox { CircularProgressIndicator() }
         uiState.klub == null -> LaunchedEffect(Unit) { onNemaKluba() }
         else -> Scaffold(
+            // Razmak za sistemske trake dodaje MainActivity za cijelu aplikaciju.
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 NavigationBar {
                     Tab.values().forEachIndexed { index, tab ->
