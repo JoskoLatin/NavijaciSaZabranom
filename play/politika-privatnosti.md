@@ -9,7 +9,7 @@ Ova politika objašnjava koje podatke aplikacija **Navijači sa zabranom** priku
 Aplikaciju razvija i podacima upravlja:
 
 - **[ime i prezime / naziv razvijatelja]**
-- Kontakt: **[kontakt email]**
+- Kontakt: **navijacisazabranom@gmail.com**
 
 Za sva pitanja o privatnosti javite se na gornji email.
 
@@ -62,4 +62,4 @@ Ovu politiku možemo povremeno ažurirati. Bitne izmjene objavit ćemo na ovoj s
 
 ## Kontakt
 
-Za sva pitanja: **[kontakt email]**
+Za sva pitanja: **navijacisazabranom@gmail.com**
