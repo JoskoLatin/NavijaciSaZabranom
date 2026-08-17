@@ -1,10 +1,5 @@
 package com.navijacisazabranom.app.ui.screens.profil
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -17,46 +12,48 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import coil.compose.AsyncImage
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.hns.PraceniKlub
 import com.navijacisazabranom.app.data.hns.Utakmica
+import com.navijacisazabranom.app.ui.components.DodajUKalendarKartica
+import com.navijacisazabranom.app.ui.components.PorukaKalendara
+import com.navijacisazabranom.app.ui.components.ProvjeriNaPovratku
+import kotlinx.coroutines.delay
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")
 private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-/** Najviše ovoliko ms između dodira da se broje kao isti niz (triple-tap easter egg). */
-private const val TROSTRUKI_PROZOR_MS = 700L
+/**
+ * Koliko se ms čeka na sljedeći dodir prije nego se dodir shvati kao običan klik.
+ * Kratko, da otvaranje rasporeda ostane brzo, a dovoljno za tri uzastopna dodira.
+ */
+private const val TROSTRUKI_PROZOR_MS = 350L
 
-private val DOZVOLE_KALENDAR = arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+/** Do ovoliko dana unaprijed umjesto pukog datuma pišemo "Sutra", "Za 2 dana"… */
+private const val ODBROJAVANJE_DANA = 3L
 
 @Composable
 fun KlubTab(
@@ -64,6 +61,7 @@ fun KlubTab(
     sljedeca: Utakmica?,
     hnsNaopako: Boolean,
     noviTermini: Int,
+    imaTermina: Boolean,
     porukaKalendar: String?,
     onPromijeniKlub: () -> Unit,
     onOtvoriRaspored: () -> Unit,
@@ -73,67 +71,18 @@ fun KlubTab(
     onPorukaPrikazana: () -> Unit,
     onProvjeriKalendar: () -> Unit,
 ) {
-    val context = LocalContext.current
-
-    // Korisnik je termine mogao obrisati u kalendaru dok je aplikacija bila u pozadini.
-    val vlasnikZivotnogCiklusa = LocalLifecycleOwner.current
-    DisposableEffect(vlasnikZivotnogCiklusa) {
-        val promatrac = LifecycleEventObserver { _, dogadjaj ->
-            if (dogadjaj == Lifecycle.Event.ON_RESUME) onProvjeriKalendar()
-        }
-        vlasnikZivotnogCiklusa.lifecycle.addObserver(promatrac)
-        onDispose { vlasnikZivotnogCiklusa.lifecycle.removeObserver(promatrac) }
-    }
-
-    val dozvolaLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-    ) { rezultati ->
-        if (rezultati.values.all { it }) {
-            onDodajSezonu()
-        } else {
-            Toast.makeText(context, R.string.kalendar_dozvola_odbijena, Toast.LENGTH_LONG).show()
-        }
-    }
-
-    // Rezultat upisa u kalendar javljamo porukom pa je odmah čistimo.
-    LaunchedEffect(porukaKalendar) {
-        porukaKalendar?.let {
-            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-            onPorukaPrikazana()
-        }
-    }
+    ProvjeriNaPovratku(onProvjeriKalendar)
+    PorukaKalendara(porukaKalendar, onPorukaPrikazana)
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Sadržaj kluba skrola samo ako mu zafali mjesta; HNS sekcija ostaje pribijena uz tabove.
+        // Sadržaj kluba skrola samo ako mu zafali mjesta; HNS kartica ostaje pribijena uz tabove.
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
-            AsyncImage(
-                model = klub.grbUrl,
-                contentDescription = null,
-                placeholder = painterResource(R.drawable.ic_klub_placeholder),
-                error = painterResource(R.drawable.ic_klub_placeholder),
-                fallback = painterResource(R.drawable.ic_klub_placeholder),
-                modifier = Modifier.size(80.dp),
-            )
-            Text(
-                text = klub.klubNaziv,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(top = 6.dp),
-            )
-
-            OutlinedButton(
-                onClick = onPromijeniKlub,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp),
-            ) {
-                Text(text = stringResource(R.string.profil_promijeni_klub))
-            }
+            KlubZaglavlje(klub = klub, onPromijeniKlub = onPromijeniKlub)
 
             SljedecaUtakmicaKartica(
                 sljedeca = sljedeca,
@@ -141,93 +90,72 @@ fun KlubTab(
                 modifier = Modifier.padding(top = 10.dp),
             )
 
-            SezonaUKalendarKartica(
+            DodajUKalendarKartica(
+                opis = stringResource(R.string.kalendar_sezona_opis),
+                gumbNatpis = stringResource(R.string.kalendar_sezona_gumb),
                 noviTermini = noviTermini,
-                imaNadolazecih = sljedeca != null,
-                onDodaj = {
-                    val imaDozvolu = DOZVOLE_KALENDAR.all {
-                        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-                    }
-                    if (imaDozvolu) onDodajSezonu() else dozvolaLauncher.launch(DOZVOLE_KALENDAR)
-                },
+                imaNadolazecih = imaTermina,
+                onDodaj = onDodajSezonu,
                 modifier = Modifier.padding(top = 10.dp),
             )
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        ReprezentacijaKartica(
+            hnsNaopako = hnsNaopako,
+            onOtvori = onReprezentacija,
+            onPreokreniHns = onPreokreniHns,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+    }
+}
+
+/** Grb, naziv kluba i natjecanje u jednom retku — promjena kluba je uz njih, a ne preko cijele širine. */
+@Composable
+private fun KlubZaglavlje(klub: PraceniKlub, onPromijeniKlub: () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 12.dp, top = 8.dp, end = 4.dp, bottom = 8.dp),
         ) {
-            HnsLogo(naopako = hnsNaopako, onPreokreni = onPreokreniHns)
-            // Otvaranje rasporeda reprezentacije je na tekstu (logo je rezerviran za easter egg).
-            Text(
-                text = stringResource(R.string.profil_reprezentacija),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(top = 2.dp)
-                    .clickable(onClick = onReprezentacija)
-                    .padding(6.dp),
+            AsyncImage(
+                model = klub.grbUrl,
+                contentDescription = null,
+                placeholder = painterResource(R.drawable.ic_klub_placeholder),
+                error = painterResource(R.drawable.ic_klub_placeholder),
+                fallback = painterResource(R.drawable.ic_klub_placeholder),
+                modifier = Modifier.size(52.dp),
             )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+            ) {
+                Text(text = klub.klubNaziv, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = klub.natjecanjeNaziv,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            TextButton(onClick = onPromijeniKlub) {
+                Text(text = stringResource(R.string.profil_promijeni))
+            }
         }
     }
 }
 
+/**
+ * Za utakmice u sljedećih par dana datum sam po sebi slabo govori koliko je blizu,
+ * pa uz njega ide i odbrojavanje ("Sutra", "Za 2 dana"). Dalje od toga nema smisla.
+ */
 @Composable
-private fun SezonaUKalendarKartica(
-    noviTermini: Int,
-    imaNadolazecih: Boolean,
-    onDodaj: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    // Kad su svi termini upisani, gumb nema što raditi — zamjenjuje ga potvrda.
-    val sveDodano = imaNadolazecih && noviTermini == 0
-
-    Card(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.kalendar_sezona_opis),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            if (noviTermini > 0) {
-                Text(
-                    text = stringResource(R.string.kalendar_novi_termini, noviTermini),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-            }
-            if (sveDodano) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 12.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Text(
-                        text = stringResource(R.string.kalendar_svi_dodani),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
-                }
-            } else {
-                Button(
-                    onClick = onDodaj,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                ) {
-                    Text(text = stringResource(R.string.kalendar_sezona_gumb))
-                }
-            }
-        }
+private fun odbrojavanje(datum: LocalDate): String? {
+    val dana = ChronoUnit.DAYS.between(LocalDate.now(), datum)
+    return when {
+        dana == 0L -> stringResource(R.string.odbrojavanje_danas)
+        dana == 1L -> stringResource(R.string.odbrojavanje_sutra)
+        dana in 2L..ODBROJAVANJE_DANA -> stringResource(R.string.odbrojavanje_za_dana, dana.toInt())
+        else -> null
     }
 }
 
@@ -241,10 +169,17 @@ private fun SljedecaUtakmicaKartica(
     // Cijela kartica otvara raspored kluba.
     Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.profil_sljedeca_utakmica),
-                style = MaterialTheme.typography.titleSmall,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.profil_sljedeca_utakmica),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f),
+                )
+                sljedeca?.datum?.let { datum ->
+                    odbrojavanje(datum)?.let { blizina -> OdbrojavanjeOznaka(blizina) }
+                }
+            }
+
             if (sljedeca == null) {
                 Text(
                     text = stringResource(R.string.profil_nema_sljedece),
@@ -257,54 +192,110 @@ private fun SljedecaUtakmicaKartica(
                 Text(
                     text = "${sljedeca.datum.format(dateFormatter)} $vrijemeText",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(top = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 6.dp),
                 )
                 Text(
                     text = "${sljedeca.domacinNaziv} — ${sljedeca.gostNaziv}",
                     style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 2.dp),
                 )
                 sljedeca.stadion?.let { stadion ->
-                    Text(text = stadion, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = stadion,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
+
             Text(
                 text = stringResource(R.string.profil_cijeli_raspored),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.padding(top = 12.dp),
             )
         }
     }
 }
 
 @Composable
-private fun HnsLogo(naopako: Boolean, onPreokreni: () -> Unit) {
+private fun OdbrojavanjeOznaka(tekst: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        shape = MaterialTheme.shapes.small,
+    ) {
+        Text(
+            text = tekst,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+        )
+    }
+}
+
+/** HNS logo i poveznica na raspored reprezentacije, u istom retku. */
+@Composable
+private fun ReprezentacijaKartica(
+    hnsNaopako: Boolean,
+    onOtvori: () -> Unit,
+    onPreokreniHns: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onOtvori),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            HnsLogo(naopako = hnsNaopako, onOtvori = onOtvori, onPreokreni = onPreokreniHns)
+            Text(
+                text = stringResource(R.string.profil_reprezentacija),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 12.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun HnsLogo(naopako: Boolean, onOtvori: () -> Unit, onPreokreni: () -> Unit) {
     val kut by animateFloatAsState(
         targetValue = if (naopako) 180f else 0f,
         animationSpec = tween(durationMillis = 400),
         label = "hns_naopako",
     )
-    // Easter egg: tri dodira unutar prozora okrenu logo naopako (i natrag).
-    val vremenaDodira = remember { mutableListOf<Long>() }
+    var brojDodira by remember { mutableStateOf(0) }
+
+    // Jedan dodir otvara raspored, tri ga okrenu naopako (easter egg). Zato se nakon
+    // dodira kratko čeka — tek ako drugi ne stigne, dodir se računa kao običan klik.
+    LaunchedEffect(brojDodira) {
+        when {
+            brojDodira == 0 -> Unit
+            brojDodira >= 3 -> {
+                onPreokreni()
+                brojDodira = 0
+            }
+            else -> {
+                delay(TROSTRUKI_PROZOR_MS)
+                if (brojDodira == 1) onOtvori()
+                brojDodira = 0
+            }
+        }
+    }
 
     AsyncImage(
         model = R.drawable.ic_hns,
         contentDescription = stringResource(R.string.profil_reprezentacija),
         modifier = Modifier
-            .size(60.dp)
+            .size(48.dp)
             .rotate(kut)
             .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    val sada = System.currentTimeMillis()
-                    vremenaDodira.add(sada)
-                    vremenaDodira.removeAll { sada - it > TROSTRUKI_PROZOR_MS }
-                    if (vremenaDodira.size >= 3) {
-                        vremenaDodira.clear()
-                        onPreokreni()
-                    }
-                })
+                detectTapGestures(onTap = { brojDodira++ })
             },
     )
 }

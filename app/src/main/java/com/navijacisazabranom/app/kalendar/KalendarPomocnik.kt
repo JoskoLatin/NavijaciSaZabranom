@@ -51,10 +51,16 @@ object KalendarPomocnik {
 
     /**
      * Upisuje više termina odjednom izravno u kalendar (traži dozvolu WRITE_CALENDAR).
-     * Vraća mapu id utakmice → id događaja u kalendaru, da se poslije može provjeriti
-     * je li korisnik termin u međuvremenu obrisao.
+     * Vraća mapu ključ termina → id događaja u kalendaru, da se poslije može provjeriti
+     * je li korisnik termin u međuvremenu obrisao. Ključ je odvojiv od id-ja utakmice
+     * jer se isti popis vodi za klupski raspored i za reprezentaciju.
      */
-    fun dodajSve(context: Context, utakmice: List<Utakmica>, opis: String): Result<Map<String, Long>> =
+    fun dodajSve(
+        context: Context,
+        utakmice: List<Utakmica>,
+        opis: String,
+        kljuc: (Utakmica) -> String = { it.id },
+    ): Result<Map<String, Long>> =
         runCatching {
             val kalendarId = pronadjiZapisiviKalendar(context)
                 ?: error("Nije pronađen kalendar u koji se može pisati")
@@ -64,7 +70,7 @@ object KalendarPomocnik {
                 val vrijednosti = vrijednostiZaUpis(utakmica, kalendarId, opis)
                 val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, vrijednosti)
                 uri?.lastPathSegment?.toLongOrNull()?.let { dogadjajId ->
-                    zapisi[utakmica.id] = dogadjajId
+                    zapisi[kljuc(utakmica)] = dogadjajId
                     dodajPodsjetnik(context, dogadjajId, utakmica)
                 }
             }

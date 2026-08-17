@@ -1,19 +1,17 @@
 package com.navijacisazabranom.app.ui.screens.profil
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.data.auth.AuthRepository
 import com.navijacisazabranom.app.data.hns.PraceniKlub
 import com.navijacisazabranom.app.data.hns.PraceniKlubRepository
+import com.navijacisazabranom.app.data.hns.ReprezentacijaRepository
 import com.navijacisazabranom.app.data.hns.Utakmica
 import com.navijacisazabranom.app.data.postavke.PostavkeRepository
-import com.navijacisazabranom.app.kalendar.KalendarPomocnik
+import com.navijacisazabranom.app.kalendar.KalendarUpis
 import com.navijacisazabranom.app.profil.ProfilnaSlika
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -23,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -41,6 +38,8 @@ data class ProfilUiState(
     val email: String? = null,
     /** Sve nadolazeće utakmice (domaće + europske), kronološki. */
     val nadolazece: List<Utakmica> = emptyList(),
+    /** Nadolazeće utakmice reprezentacije — u kalendar idu skupa s klupskima. */
+    val reprezentacija: List<Utakmica> = emptyList(),
     /** Id utakmice → id događaja u kalendaru, za već upisane termine. */
     val uKalendaru: Map<String, Long> = emptyMap(),
     val porukaKalendar: String? = null,
@@ -48,19 +47,28 @@ data class ProfilUiState(
     val profilnaAzurirana: Long = 0L,
 ) {
     /** Termini kojih nema u kalendaru — novi (npr. nakon ždrijeba) ili korisnikom obrisani. */
-    val noviTermini: Int get() = nadolazece.count { it.id !in uKalendaru }
+    val noviTermini: Int get() = nadolazece.count { it.id !in uKalendaru } +
+        reprezentacija.count { KalendarUpis.PREFIKS_REPREZENTACIJA + it.id !in uKalendaru }
+
+    /** Ima li uopće što upisati u kalendar (inače kartica nema što ponuditi ni potvrditi). */
+    val imaTermina: Boolean get() = nadolazece.isNotEmpty() || reprezentacija.isNotEmpty()
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ProfilViewModel @Inject constructor(
     private val praceniKlubRepository: PraceniKlubRepository,
+    private val reprezentacijaRepository: ReprezentacijaRepository,
     private val postavkeRepository: PostavkeRepository,
     private val authRepository: AuthRepository,
+    private val kalendarUpis: KalendarUpis,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val poruka = MutableStateFlow<String?>(null)
+
+    /** Nadolazeće utakmice reprezentacije; prazno dok se ne dohvate (ili ako dohvat padne). */
+    private val reprezentacija = MutableStateFlow<List<Utakmica>>(emptyList())
 
     val uiState: StateFlow<ProfilUiState> = combine(
         praceniKlubRepository.observePraceniKlub(),
@@ -71,6 +79,7 @@ class ProfilViewModel @Inject constructor(
     ) { klub, naopako, uKalendaru, poruka, profilna ->
         Ulaz(klub, naopako, uKalendaru, poruka, profilna)
     }
+        .combine(reprezentacija) { ulaz, repre -> ulaz.copy(reprezentacija = repre) }
         .flatMapLatest { ulaz ->
             if (ulaz.klub == null) {
                 flowOf(osnovnoStanje(ulaz))
@@ -97,6 +106,13 @@ class ProfilViewModel @Inject constructor(
             val klub = praceniKlubRepository.getPraceniKlub() ?: return@launch
             praceniKlubRepository.osvjeziUtakmice(klub.natjecanjeId)
         }
+        // Reprezentacija se ne sprema u bazu; dohvat je neobavezan — ako padne, ostaje samo klupski raspored.
+        viewModelScope.launch {
+            reprezentacijaRepository.getRaspored().onSuccess { utakmice ->
+                val danas = LocalDate.now()
+                reprezentacija.value = utakmice.filter { it.datum >= danas }
+            }
+        }
         provjeriKalendar()
     }
 
@@ -105,57 +121,34 @@ class ProfilViewModel @Inject constructor(
      * da ih aplikacija ponovno ponudi za dodavanje umjesto da tvrdi da su već upisani.
      */
     fun provjeriKalendar() {
-        viewModelScope.launch {
-            if (!smijeCitatiKalendar()) return@launch
-            val zapisi = postavkeRepository.observeUKalendaru().first()
-            if (zapisi.isEmpty()) return@launch
-
-            withContext(Dispatchers.IO) {
-                KalendarPomocnik.postojeciTermini(context, zapisi.values.toSet())
-            }.onSuccess { postojeci ->
-                val preostali = zapisi.filterValues { it in postojeci }.keys
-                if (preostali.size != zapisi.size) postavkeRepository.zadrziUKalendaru(preostali)
-            }
-        }
+        viewModelScope.launch { kalendarUpis.ocistiObrisane() }
     }
 
-    /** Upisuje sve nadolazeće termine koji još nisu u kalendaru (dozvola se traži u UI-ju). */
+    /**
+     * Upisuje sve nadolazeće termine koji još nisu u kalendaru — klupske i reprezentativne
+     * zajedno, jednim potezom (dozvola se traži u UI-ju).
+     */
     fun dodajSezonuUKalendar() {
         viewModelScope.launch {
-            // Provjera prije upisa: bez nje bi obrisani termini vrijedili kao već dodani.
-            if (smijeCitatiKalendar()) {
-                val zapisi = postavkeRepository.observeUKalendaru().first()
-                if (zapisi.isNotEmpty()) {
-                    withContext(Dispatchers.IO) {
-                        KalendarPomocnik.postojeciTermini(context, zapisi.values.toSet())
-                    }.onSuccess { postojeci ->
-                        postavkeRepository.zadrziUKalendaru(zapisi.filterValues { it in postojeci }.keys)
-                    }
-                }
-            }
-
             val stanje = uiState.value
-            val vec = postavkeRepository.observeUKalendaru().first()
-            val zaDodati = stanje.nadolazece.filter { it.id !in vec }
-            if (zaDodati.isEmpty()) {
-                poruka.value = context.getString(R.string.kalendar_nema_novih)
-                return@launch
-            }
+            val klupski = kalendarUpis.dodajNove(
+                utakmice = stanje.nadolazece,
+                opis = context.getString(R.string.kalendar_opis),
+            )
+            val repre = kalendarUpis.dodajNove(
+                utakmice = stanje.reprezentacija,
+                opis = context.getString(R.string.reprezentacija_kalendar_stavka_opis),
+                prefiks = KalendarUpis.PREFIKS_REPREZENTACIJA,
+            )
 
-            withContext(Dispatchers.IO) {
-                KalendarPomocnik.dodajSve(context, zaDodati, context.getString(R.string.kalendar_opis))
+            val dodano = klupski.getOrDefault(0) + repre.getOrDefault(0)
+            poruka.value = when {
+                dodano > 0 -> context.getString(R.string.kalendar_dodano, dodano)
+                klupski.isFailure || repre.isFailure -> context.getString(R.string.kalendar_greska)
+                else -> context.getString(R.string.kalendar_nema_novih)
             }
-                .onSuccess { zapisi ->
-                    postavkeRepository.zabiljeziUKalendaru(zapisi)
-                    poruka.value = context.getString(R.string.kalendar_dodano, zapisi.size)
-                }
-                .onFailure { poruka.value = context.getString(R.string.kalendar_greska) }
         }
     }
-
-    private fun smijeCitatiKalendar(): Boolean =
-        ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) ==
-            PackageManager.PERMISSION_GRANTED
 
     fun ocistiPoruku() {
         poruka.value = null
@@ -183,6 +176,7 @@ class ProfilViewModel @Inject constructor(
         ucitava = false,
         hnsNaopako = ulaz.naopako,
         email = authRepository.currentUser?.email,
+        reprezentacija = ulaz.reprezentacija,
         uKalendaru = ulaz.uKalendaru,
         porukaKalendar = ulaz.poruka,
         profilnaAzurirana = ulaz.profilnaAzurirana,
@@ -194,5 +188,6 @@ class ProfilViewModel @Inject constructor(
         val uKalendaru: Map<String, Long>,
         val poruka: String?,
         val profilnaAzurirana: Long,
+        val reprezentacija: List<Utakmica> = emptyList(),
     )
 }

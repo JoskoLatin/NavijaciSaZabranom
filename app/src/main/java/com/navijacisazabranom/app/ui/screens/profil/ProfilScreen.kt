@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,10 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,9 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +50,9 @@ import com.navijacisazabranom.app.R
 import com.navijacisazabranom.app.profil.ProfilnaSlika
 import com.navijacisazabranom.app.ui.components.CenteredBox
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfilScreen(
     onPromijeniKlub: () -> Unit,
@@ -60,7 +64,8 @@ fun ProfilScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     // Klub je polazni tab jer nosi glavni sadržaj.
-    var odabraniIndex by rememberSaveable { mutableStateOf(1) }
+    val stanjeStranica = rememberPagerState(initialPage = Tab.KLUB.ordinal) { Tab.values().size }
+    val opseg = rememberCoroutineScope()
 
     when {
         uiState.ucitava -> CenteredBox { CircularProgressIndicator() }
@@ -70,8 +75,8 @@ fun ProfilScreen(
                 NavigationBar {
                     Tab.values().forEachIndexed { index, tab ->
                         NavigationBarItem(
-                            selected = odabraniIndex == index,
-                            onClick = { odabraniIndex = index },
+                            selected = stanjeStranica.currentPage == index,
+                            onClick = { opseg.launch { stanjeStranica.animateScrollToPage(index) } },
                             icon = { TabIkona(tab) },
                             label = { Text(stringResource(tab.natpis)) },
                         )
@@ -79,8 +84,12 @@ fun ProfilScreen(
                 }
             },
         ) { unutarnjiRazmak ->
-            Box(modifier = Modifier.padding(unutarnjiRazmak)) {
-                when (Tab.values()[odabraniIndex]) {
+            // Tabovi se osim dodirom mijenjaju i povlačenjem u stranu.
+            HorizontalPager(
+                state = stanjeStranica,
+                modifier = Modifier.padding(unutarnjiRazmak),
+            ) { stranica ->
+                when (Tab.values()[stranica]) {
                     Tab.PROFIL -> ProfilTab(
                         email = uiState.email,
                         profilnaAzurirana = uiState.profilnaAzurirana,
@@ -93,6 +102,7 @@ fun ProfilScreen(
                         sljedeca = uiState.sljedeca,
                         hnsNaopako = uiState.hnsNaopako,
                         noviTermini = uiState.noviTermini,
+                        imaTermina = uiState.imaTermina,
                         porukaKalendar = uiState.porukaKalendar,
                         onPromijeniKlub = onPromijeniKlub,
                         onOtvoriRaspored = {
@@ -179,17 +189,30 @@ private fun ProfilTab(
                     )
                 },
         )
-        Text(
-            text = stringResource(R.string.profil_prijavljeni_kao),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 16.dp),
-        )
-        Text(
-            text = email ?: "—",
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 4.dp),
-        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.profil_prijavljeni_kao),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = email ?: "—",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

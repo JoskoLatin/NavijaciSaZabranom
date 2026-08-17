@@ -1,0 +1,9 @@
+Novo u verziji 1.2:
+
+• Utakmice reprezentacije mogu se upisati u kalendar — jedan gumb upisuje termine kluba (domaće i europske) i reprezentacije zajedno.
+• Odbrojavanje na kartici sljedeće utakmice: Danas, Sutra, Za 2 dana, Za 3 dana.
+• Jasniji naslovi obavijesti: „Danas igra…" i „Sutra igra…".
+• Preglednije sučelje — sadržaj je složen u kartice.
+• Kartice se sada mijenjaju i povlačenjem prstom u stranu.
+• Dodir na HNS logo otvara raspored reprezentacije.
+• Dopunjene upute: kada stiže podsjetnik, promjena kluba, privatnost i napomena o odgovornosti.

@@ -17,6 +17,10 @@ data class ReprezentacijaUiState(
     val greska: Boolean = false,
 )
 
+/**
+ * Ekran je samo pregled rasporeda — upis u kalendar ide skupno s klupskim
+ * terminima preko kartice na tabu Klub.
+ */
 @HiltViewModel
 class ReprezentacijaViewModel @Inject constructor(
     private val reprezentacijaRepository: ReprezentacijaRepository,

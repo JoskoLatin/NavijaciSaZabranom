@@ -43,9 +43,13 @@
     <string name="validacija_lozinke_razlicite">Lozinke se ne podudaraju.</string>
 
     <string name="profil_sljedeca_utakmica">Sljedeća utakmica</string>
+    <string name="odbrojavanje_danas">Danas</string>
+    <string name="odbrojavanje_sutra">Sutra</string>
+    <string name="odbrojavanje_za_dana">Za %1$d dana</string>
     <string name="profil_nema_sljedece">Nema nadolazećih utakmica u rasporedu.</string>
     <string name="profil_cijeli_raspored">Prikaži cijeli raspored</string>
     <string name="profil_promijeni_klub">Promijeni klub</string>
+    <string name="profil_promijeni">Promijeni</string>
     <string name="action_dodaj_u_kalendar">Dodaj u kalendar</string>
     <string name="kalendar_opis">Na dan ove utakmice obavezni ste javiti se nadležnoj policijskoj postaji.</string>
     <string name="kalendar_nema_aplikacije">Nije pronađena aplikacija kalendara.</string>
@@ -59,8 +63,8 @@
     <string name="profilna_promijeni">Promijeni sliku</string>
     <string name="profilna_greska">Slika se nije mogla spremiti.</string>
 
-    <string name="kalendar_sezona_gumb">Dodaj cijelu sezonu u kalendar</string>
-    <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte cijelu sezonu u kalendar — podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>
+    <string name="kalendar_sezona_gumb">Dodaj sve termine u kalendar</string>
+    <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte sve termine u kalendar — utakmice svog kluba (domaće i europske) i utakmice reprezentacije. Podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>
     <string name="kalendar_dodano">Dodano %1$d termina u kalendar.</string>
     <string name="kalendar_nema_novih">Svi termini su već u kalendaru.</string>
     <string name="kalendar_svi_dodani">Svi termini su dodani u kalendar.</string>
@@ -69,23 +73,32 @@
     <string name="kalendar_dozvola_odbijena">Bez dopuštenja za kalendar termini se ne mogu upisati.</string>
 
     <string name="upute_naslov">Kako koristiti aplikaciju</string>
-    <string name="upute_zasto_naslov">Zašto dodati termine u kalendar</string>
+    <string name="upute_svrha_naslov">Svrha aplikacije</string>
+    <string name="upute_svrha_tekst">Aplikacija podsjeća na obvezu javljanja nadležnoj policijskoj postaji na dan utakmice vašeg kluba. Zabrana u pravilu vrijedi i za europske utakmice, pa su i one u rasporedu, a u kalendar se mogu upisati i utakmice reprezentacije.</string>
+    <string name="upute_zasto_naslov">Zašto termine držati u kalendaru</string>
     <string name="upute_zasto_tekst">Podsjetnici iz aplikacije mogu izostati ako sustav ugasi aplikaciju u pozadini (osobito na Xiaomi/MIUI uređajima). Kalendar okida podsjetnike pouzdano, pa je najsigurnije termine imati i ondje.</string>
-    <string name="upute_kako_naslov">Kako dodati cijelu sezonu</string>
-    <string name="upute_kako_tekst">Na kartici Klub tapnite „Dodaj cijelu sezonu u kalendar" i dopustite pristup kalendaru. Svi nadolazeći termini (domaći i europski) upisat će se odjednom. Ponovni pritisak ne stvara duplikate.</string>
-    <string name="upute_podsjetnik_naslov">Postavljanje podsjetnika</string>
-    <string name="upute_podsjetnik_tekst">Otvorite termin u aplikaciji kalendara i postavite podsjetnik kakav želite — npr. dan prije i ujutro na dan utakmice.</string>
-    <string name="upute_novi_naslov">Novi termini</string>
-    <string name="upute_novi_tekst">Kad se objave novi termini (npr. nakon europskog ždrijeba), na kartici Klub pojavit će se poruka da ih možete dodati u kalendar.</string>
+    <string name="upute_kako_naslov">Kako dodati termine</string>
+    <string name="upute_kako_tekst">Na kartici Klub pritisnite „Dodaj sve termine u kalendar" i dopustite pristup kalendaru. Odjednom se upisuju svi nadolazeći termini — utakmice vašeg kluba (domaće i europske) i utakmice reprezentacije. Ponovni pritisak ne stvara duplikate.</string>
+    <string name="upute_sat_naslov">Kada stiže podsjetnik</string>
+    <string name="upute_sat_tekst">Termin se upisuje s podsjetnikom u 9 ujutro na dan utakmice, bez obzira na to kada utakmica počinje — da imate cijeli dan za javljanje. Ako satnica još nije objavljena, termin se upisuje kao cjelodnevni, pa točno vrijeme provjerite u rasporedu bliže utakmici.</string>
+    <string name="upute_podsjetnik_naslov">Vlastiti podsjetnici</string>
+    <string name="upute_podsjetnik_tekst">Želite li još koji podsjetnik, otvorite termin u aplikaciji kalendara i dodajte ga — npr. dan prije. Podsjetnik u 9 ujutro pritom ostaje.</string>
+    <string name="upute_novi_naslov">Novi i promijenjeni termini</string>
+    <string name="upute_novi_tekst">Kad se objave novi termini (npr. nakon europskog ždrijeba) ili se promijeni satnica, na kartici Klub pojavit će se poruka da ih možete dodati. Isto vrijedi ako neki termin obrišete u kalendaru — aplikacija to primijeti i ponudi ga ponovno.</string>
+    <string name="upute_klub_naslov">Promjena kluba</string>
+    <string name="upute_klub_tekst">Klub mijenjate na kartici Klub, gumbom „Promijeni". Termini koje ste dotad upisali ostaju u kalendaru — ako ih više ne trebate, obrišite ih u aplikaciji kalendara.</string>
     <string name="upute_pouzdanost_naslov">Podsjetnici iz aplikacije</string>
     <string name="upute_pouzdanost_tekst">Ako želite i podsjetnike iz same aplikacije, dopustite joj rad u pozadini: isključite optimizaciju baterije i uključite automatsko pokretanje (Autostart). Te prečace nudi kartica na ekranu Raspored.</string>
-    <string name="upute_svrha_naslov">Svrha aplikacije</string>
-    <string name="upute_svrha_tekst">Aplikacija je alat za poštivanje zakonske obveze javljanja nadležnoj policijskoj postaji na dan utakmice vašeg kluba. Zabrana vrijedi i za europske utakmice, pa su i one uključene u raspored.</string>
+    <string name="upute_privatnost_naslov">Privatnost</string>
+    <string name="upute_privatnost_tekst">Na uređaju ostaju praćeni klub, preuzeti raspored, profilna slika i termini u kalendaru. Izvan uređaja idu samo podaci vašeg računa za prijavu i podatak o tome koji je klub odabran, radi statistike. Rasporedi se preuzimaju s javnih izvora, bez slanja vaših podataka.</string>
+    <string name="upute_odgovornost_naslov">Važno</string>
+    <string name="upute_odgovornost_tekst">Aplikacija je pomoć u pamćenju, a ne službena obavijest ni zamjena za rješenje o zabrani. Rasporedi se preuzimaju s javnih izvora i mogu se promijeniti ili kasniti, pa termin prije javljanja provjerite i sami. Za obvezu javljanja i njezine uvjete mjerodavno je vaše rješenje i nadležna policijska postaja.</string>
     <string name="profil_reprezentacija">Raspored reprezentacije</string>
 
     <string name="reprezentacija_title">Raspored reprezentacije</string>
     <string name="reprezentacija_greska">Preuzimanje rasporeda reprezentacije nije uspjelo. Provjerite internetsku vezu.</string>
     <string name="reprezentacija_prazno">Trenutačno nema objavljenih utakmica reprezentacije.</string>
+    <string name="reprezentacija_kalendar_stavka_opis">Utakmica reprezentacije. Ako se zabrana odnosi i na utakmice reprezentacije, na dan utakmice obavezni ste javiti se nadležnoj policijskoj postaji.</string>
 
     <string name="trazilica_title">Odaberite klub</string>
     <string name="klub_search_placeholder">Pretraži klubove</string>
@@ -109,9 +122,9 @@
 
     <string name="notifikacija_kanal_naziv">Podsjetnici za javljanje</string>
     <string name="notifikacija_kanal_opis">Obavijesti o danu utakmice i obvezi javljanja nadležnoj policijskoj postaji</string>
-    <string name="notifikacija_dan_utakmice_naslov">%1$s danas igra</string>
+    <string name="notifikacija_dan_utakmice_naslov">Danas igra %1$s</string>
     <string name="notifikacija_dan_utakmice_tekst">Podsjetnik: obavezni ste javiti se nadležnoj policijskoj postaji. Utakmica: %1$s.</string>
-    <string name="notifikacija_vecer_prije_naslov">%1$s sutra igra</string>
+    <string name="notifikacija_vecer_prije_naslov">Sutra igra %1$s</string>
     <string name="notifikacija_vecer_prije_tekst">Podsjetnik unaprijed: sutra igra vaš klub. Ne zaboravite obvezu javljanja nadležnoj policijskoj postaji.</string>
     <string name="notifikacija_termin_naslov">Novi termin utakmice</string>
     <string name="notifikacija_termin_tekst">%1$s — %2$s: %3$s, %4$s.</string>
