@@ -135,4 +135,5 @@ za bilo koju svrhu **osim osobne uporabe**. Aplikacija je građena u skladu s ti
 dohvaća sam uređaj, za svog korisnika, i nigdje ne postoji središnja kopija podataka.
 Tko projekt koristi drukčije — osobito za poslužiteljsko prikupljanje ili preprodaju
 podataka — dužan je sam ishoditi suglasnost nositelja prava.
+
 Made in Vodice.
