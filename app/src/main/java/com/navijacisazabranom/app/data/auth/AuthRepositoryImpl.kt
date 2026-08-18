@@ -23,8 +23,10 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     init {
-        // Firebaseovi mailovi (verifikacija, reset lozinke) na jeziku uređaja.
-        firebaseAuth.useAppLanguage()
+        // Firebaseovi mailovi (verifikacija, reset lozinke) uvijek na hrvatskom.
+        // useAppLanguage() bi ih slao na jeziku uređaja, pa je telefon na engleskom
+        // dobivao mailove na stranom jeziku iako je aplikacija samo hrvatska.
+        firebaseAuth.setLanguageCode("hr")
     }
 
     override val currentUser: FirebaseUser?
