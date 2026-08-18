@@ -53,6 +53,12 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            // Compose od verzije 1.11 donosi native biblioteku (libandroidx.graphics.path.so),
+            // pa Play trazi simbole za citljive izvjestaje o rusenjima.
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
