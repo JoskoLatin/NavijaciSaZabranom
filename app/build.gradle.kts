@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt.android)
 }
 
@@ -70,9 +71,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
 
     packaging {
         resources {
@@ -96,6 +94,8 @@ dependencies {
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
+    // Od Composea 1.7 ikone vise ne dolaze uz material3, treba ih navesti izrijekom.
+    implementation(libs.compose.material.icons.core)
     implementation(libs.navigation.compose)
 
     implementation(libs.hilt.android)
