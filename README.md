@@ -1,5 +1,10 @@
 # Navijači sa zabranom
 
+**[⬇️ Preuzmi APK — v1.2](https://github.com/JoskoLatin/NavijaciSaZabranom/releases/download/v1.2-b10/NavijaciSaZabranom-1.2.apk)** · [sva izdanja](https://github.com/JoskoLatin/NavijaciSaZabranom/releases/latest)
+
+Za instalaciju izvan Google Playa uređaj treba dopustiti instalaciju iz nepoznatog izvora
+(Android to sam zatraži pri otvaranju datoteke).
+
 Android aplikacija koja podsjeća na obvezu javljanja nadležnoj policijskoj postaji na dan
 utakmice praćenog kluba. Namijenjena je osobama kojima je izrečena zabrana pristupa
 sportskom natjecanju, kao pomoć u poštivanju te obveze.
@@ -34,7 +39,7 @@ Dohvat je isključivo čitanje javno objavljenih stranica, bez slanja korisničk
 Kotlin · Jetpack Compose (Material 3) · MVVM + Repository · Hilt · Room · DataStore ·
 WorkManager · Coil · jsoup · Firebase Authentication i Cloud Firestore
 
-- `minSdk` 24, `compileSdk` / `targetSdk` 35, Java 17
+- `minSdk` 24, `compileSdk` / `targetSdk` 36, Java 17
 - Release build koristi R8 (`minifyEnabled`) i `shrinkResources`
 
 ## Build
