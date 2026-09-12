@@ -4,7 +4,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Nazivi su stvarni primjeri sa semafora (sezona 2025/26). */
+/** Nazivi su stvarni primjeri sa semafora (sezone 2025/26 i 2026/27), osim gdje je navedeno drukčije. */
 class SeniorskiFiltarTest {
 
     @Test
@@ -96,5 +96,82 @@ class SeniorskiFiltarTest {
         // "skupina" sadrži "kup" kao podniz — ne smije okinuti filtar
         assertTrue(SeniorskiFiltar.jeSeniorskaLiga("Druga HNLŽ 25/26 skupina \"A\""))
         assertTrue(SeniorskiFiltar.jeSeniorskaLiga("1. liga skupina A"))
+    }
+
+    @Test
+    fun `seniorski kupovi se prepoznaju`() {
+        listOf(
+            "SuperSport HNK",
+            "KUP NSBBŽ  26/27",
+            "KUP ŽNS BPŽ 26/27",
+            "KUP NSŽI 26/27",
+            "HNK NSKŽ 26/27",
+            "kup ŽNS ",
+            "CUP NSKZŽ 26/27",
+            "KUP MNS 26/27",
+            "Kup NSPSŽ 26./27.",
+            "Hrvatski nogometni kup 26/27 ",
+            "KUP SENIORI 26/27",
+            "Kup ŽNS Varaždin 26/27",
+            "KUP ŽNS-VS ",
+            "KUP NSZŽ 26/27",
+            "Kup NS Beli Manastir - seniori 26/27",
+            "Kup NS Donji Miholjac 2026./2027.",
+            "Kup NSĐ 26/27",
+            "KUP KT 26/27",
+            "Kup NS Našice 26/27",
+            "CUP 26/27",
+            "Kup NS Valpovo 26/27",
+            "KUP NSZ 26/27",
+            "senkup25/26 25/26",
+        ).forEach { naziv ->
+            assertTrue("Trebao je biti seniorski kup: $naziv", SeniorskiFiltar.jeSeniorskiKup(naziv))
+        }
+    }
+
+    @Test
+    fun `kupovi mladih, malog nogometa i zena nisu seniorski kupovi`() {
+        listOf(
+            "ZNS-KUP-JUNIORI 26/27",
+            "ZNS-KUP-KADETI 26/27",
+            "KUP KADETI U-17 NSBBŽ 26/27",
+            "KUP PIONIRI stariji U-15 NSBBŽ 26/27",
+            "KUP U-19 JUNIORI  26/27",
+            "Kup NSŽI juniori 26/27",
+            "NSLSŽ-KUP -Pioniri 26/27",
+            "JUNIORI - KUP 26/27",
+            "KUP MLADEŽI ŽNS-VS  JUNIORI ",
+            "Završnica HNK - JUNIORI 25/26",
+            "Superkup u malom nogometu 26/27",
+            "mnkup2526 25/26",
+            "HNKŽ 26/27",
+        ).forEach { naziv ->
+            assertFalse("Nije trebao biti seniorski kup: $naziv", SeniorskiFiltar.jeSeniorskiKup(naziv))
+        }
+    }
+
+    @Test
+    fun `izmisljeni primjeri - veterani, zene i turniri nisu seniorski kupovi`() {
+        listOf(
+            "Kup veterana 26/27",
+            "Kup žene 26/27",
+            "Ženski kup NS 26/27",
+            "Prijateljski turnir - kup grada",
+        ).forEach { naziv ->
+            assertFalse("Nije trebao biti seniorski kup: $naziv", SeniorskiFiltar.jeSeniorskiKup(naziv))
+        }
+    }
+
+    @Test
+    fun `lige i skupine nisu kupovi`() {
+        listOf(
+            "SuperSport HNL",
+            "SuperSport Prva NL",
+            "Treća NL Istok 26/27",
+            "Druga HNLŽ 26/27 skupina \"A\"",
+            "1. liga skupina A",
+        ).forEach { naziv ->
+            assertFalse("Nije trebao biti kup: $naziv", SeniorskiFiltar.jeSeniorskiKup(naziv))
+        }
     }
 }

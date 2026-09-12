@@ -207,7 +207,7 @@ private fun UtakmicaRow(utakmica: Utakmica) {
         ) {
             val vrijemeText = utakmica.vrijeme?.format(timeFormatter)
                 ?: stringResource(R.string.raspored_satnica_tbd)
-            // Europske utakmice nose naziv natjecanja umjesto broja kola.
+            // Utakmice kupa i europske nose naziv natjecanja (i runde) umjesto broja kola.
             val oznaka = utakmica.natjecanje ?: "${utakmica.kolo}. kolo"
             Text(
                 text = "$oznaka · ${utakmica.datum.format(dateFormatter)} $vrijemeText",

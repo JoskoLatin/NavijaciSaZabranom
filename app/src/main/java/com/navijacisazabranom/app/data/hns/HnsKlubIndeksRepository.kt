@@ -3,6 +3,8 @@ package com.navijacisazabranom.app.data.hns
 import android.util.Log
 import com.navijacisazabranom.app.data.hns.local.IndeksiranaLigaEntity
 import com.navijacisazabranom.app.data.hns.local.KlubIndeksEntity
+import com.navijacisazabranom.app.data.hns.local.KupEntity
+import com.navijacisazabranom.app.data.hns.local.KupSudionikEntity
 import com.navijacisazabranom.app.data.hns.local.NavijaciDatabase
 import com.navijacisazabranom.app.data.postavke.PostavkeRepository
 import kotlinx.coroutines.delay
@@ -20,6 +22,7 @@ class HnsKlubIndeksRepository @Inject constructor(
 ) : KlubIndeksRepository {
 
     private val dao get() = database.klubIndeksDao()
+    private val kupDao get() = database.kupDao()
 
     override fun pretrazi(upit: String): Flow<List<KlubIndeks>> {
         // % i _ su LIKE wildcardi — iz korisničkog upita se uklanjaju.
@@ -35,7 +38,10 @@ class HnsKlubIndeksRepository @Inject constructor(
         if (postavkeRepository.getIndeksVerzija() != SeniorskiFiltar.VERZIJA) return true
         if (dao.observeBrojKlubova().first() == 0) return true
         val zadnje = dao.zadnjeIndeksiranje() ?: return true
-        return System.currentTimeMillis() - zadnje > SVJEZINA_INDEKSA_MS
+        val sada = System.currentTimeMillis()
+        if (sada - zadnje > SVJEZINA_INDEKSA_MS) return true
+        // Kupovi zastarijevaju brže od liga: klubovi viših rangova ulaze tek u kasnijim rundama.
+        return sada - postavkeRepository.getPregledKupova() > SVJEZINA_KUPOVA_MS
     }
 
     override suspend fun izgradiIndeks(napredak: (Int, Int) -> Unit): Result<Unit> = runCatching {
@@ -59,6 +65,7 @@ class HnsKlubIndeksRepository @Inject constructor(
 
         // Najnovija dostupna sezona po savezu: niže lige novu objavljuju kasnije.
         val lige = mutableListOf<LigaZaIndeks>()
+        val kupovi = mutableListOf<LigaZaIndeks>()
         for (savez in savezi) {
             delay(THROTTLE_MS)
             var sezonaLige = tekuca
@@ -75,10 +82,17 @@ class HnsKlubIndeksRepository @Inject constructor(
             natjecanja
                 .filter { SeniorskiFiltar.jeSeniorskaLiga(it.naziv) }
                 .forEach { lige += LigaZaIndeks(it, savez.id, sezonaLige) }
+            // Kupovi samo iz tekuće sezone — utakmice prošlosezonskih su odigrane.
+            if (sezonaLige == tekuca) {
+                natjecanja
+                    .filter { SeniorskiFiltar.jeSeniorskiKup(it.naziv) }
+                    .forEach { kupovi += LigaZaIndeks(it, savez.id, tekuca) }
+            }
         }
 
         val jedinstveneLige = lige.distinctBy { it.natjecanje.id }
-        val ukupno = jedinstveneLige.size
+        val jedinstveniKupovi = kupovi.distinctBy { it.natjecanje.id }
+        val ukupno = jedinstveneLige.size + jedinstveniKupovi.size
         var neuspjelih = 0
 
         jedinstveneLige.forEachIndexed { i, liga ->
@@ -111,17 +125,74 @@ class HnsKlubIndeksRepository @Inject constructor(
                     Log.w(TAG, "Liga ${liga.natjecanje.naziv} nije dohvaćena", e)
                 }
         }
+
+        check(neuspjelih <= jedinstveneLige.size / 2) {
+            "Većina liga nije dohvaćena ($neuspjelih/${jedinstveneLige.size})"
+        }
+        postavkeRepository.postaviIndeksVerzija(SeniorskiFiltar.VERZIJA)
+
+        val neuspjelihKupova = indeksirajKupove(jedinstveniKupovi) { i ->
+            napredak(jedinstveneLige.size + i, ukupno)
+        }
         napredak(ukupno, ukupno)
 
-        check(neuspjelih <= ukupno / 2) { "Većina liga nije dohvaćena ($neuspjelih/$ukupno)" }
-
-        postavkeRepository.postaviIndeksVerzija(SeniorskiFiltar.VERZIJA)
+        // Uz pojedinačne neuspjehe pregled vrijedi — ti kupovi zadržavaju stari popis
+        // sudionika. Ako je pala većina, pregled se ponavlja u sljedećem pokretanju.
+        if (neuspjelihKupova <= jedinstveniKupovi.size / 2) {
+            kupDao.obrisiDrugeSezone(tekuca)
+            postavkeRepository.postaviPregledKupova(System.currentTimeMillis())
+        }
     }
 
     private suspend fun jeSvjezaIndeksirana(liga: LigaZaIndeks): Boolean {
         val postojeca = dao.getIndeksiranaLiga(liga.natjecanje.id) ?: return false
         return postojeca.sezona == liga.sezona &&
             System.currentTimeMillis() - postojeca.azurirano < SVJEZINA_INDEKSA_MS
+    }
+
+    /**
+     * Za svaki kup bilježi klubove koji u njemu imaju utakmicu — po tome dnevna
+     * sinkronizacija zna u kojim kupovima praćeni klub igra. Klubovi viših rangova
+     * ulaze tek u kasnijim rundama, pa se popis osvježava češće od liga. Vraća broj
+     * kupova koji nisu dohvaćeni; oni zadržavaju stari popis sudionika.
+     */
+    private suspend fun indeksirajKupove(kupovi: List<LigaZaIndeks>, napredak: (Int) -> Unit): Int {
+        var neuspjelih = 0
+        kupovi.forEachIndexed { i, kup ->
+            napredak(i)
+            val postojeci = kupDao.getKup(kup.natjecanje.id)
+            if (postojeci != null && System.currentTimeMillis() - postojeci.azurirano < SVJEZINA_KUPOVA_MS) {
+                return@forEachIndexed
+            }
+
+            delay(THROTTLE_MS)
+            natjecanjeRepository.getNatjecanjeStranica(kup.natjecanje.id)
+                .onSuccess { stranica ->
+                    // Popis klubova i utakmice se u pravilu poklapaju; unija štiti od
+                    // izostanka jednog od njih u markupu.
+                    val sudionici = (
+                        stranica.klubovi.map { it.id } +
+                            stranica.utakmice.flatMap { listOf(it.domacinId, it.gostId) }
+                        )
+                        .filter { it.isNotBlank() }
+                        .toSet()
+                    kupDao.zamijeniKup(
+                        KupEntity(
+                            natjecanjeId = kup.natjecanje.id,
+                            naziv = kup.natjecanje.naziv.trim(),
+                            savezId = kup.savezId,
+                            sezona = kup.sezona,
+                            azurirano = System.currentTimeMillis(),
+                        ),
+                        sudionici.map { KupSudionikEntity(kup.natjecanje.id, it) },
+                    )
+                }
+                .onFailure { e ->
+                    neuspjelih++
+                    Log.w(TAG, "Kup ${kup.natjecanje.naziv} nije dohvaćen", e)
+                }
+        }
+        return neuspjelih
     }
 
     private fun KlubIndeksEntity.toDomain() =
@@ -141,5 +212,11 @@ class HnsKlubIndeksRepository @Inject constructor(
 
         /** Klubovi se mijenjaju samo između sezona; mjesec dana je dovoljno svježe. */
         val SVJEZINA_INDEKSA_MS: Long = TimeUnit.DAYS.toMillis(30)
+
+        /**
+         * Sudionici kupa mijenjaju se svakim ždrijebom. Nešto kraće od tjednog ciklusa
+         * indeksiranja, da svako tjedno pokretanje osvježi popis.
+         */
+        val SVJEZINA_KUPOVA_MS: Long = TimeUnit.DAYS.toMillis(6)
     }
 }

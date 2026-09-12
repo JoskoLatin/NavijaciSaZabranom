@@ -15,20 +15,22 @@ zabrani** — mjerodavni su rješenje i nadležna policijska postaja.
 ## Što radi
 
 - Odabir kluba iz svih rangova hrvatskih seniorskih natjecanja (HNL do županijskih liga).
-- Preuzimanje rasporeda, uključujući europske utakmice (Liga prvaka, Europska i
-  Konferencijska liga) i raspored A reprezentacije.
+- Preuzimanje rasporeda, uključujući utakmice kupa (Hrvatski nogometni kup i kupovi
+  županijskih saveza), europske utakmice (Liga prvaka, Europska i Konferencijska liga) i
+  raspored A reprezentacije.
 - Odbrojavanje do sljedeće utakmice („Danas", „Sutra", „Za 2 dana").
 - Skupni upis svih nadolazećih termina u kalendar uređaja, s podsjetnikom u 9 ujutro na
   dan utakmice. Kalendar je pouzdaniji od alarma jer neki uređaji agresivno gase
   pozadinske aplikacije.
 - Obavijesti na dan utakmice i (neobavezno) večer prije.
-- Prepoznavanje novih i promijenjenih termina te termina obrisanih u kalendaru.
+- Prepoznavanje novih i promijenjenih termina (uključujući utakmice kupa izvučene u
+  sljedećoj rundi) te termina obrisanih u kalendaru.
 
 ## Izvori podataka
 
 | Izvor | Namjena |
 | --- | --- |
-| `semafor.hns.family` | popis klubova i klupski rasporedi (HTML, jsoup) |
+| `semafor.hns.family` | popis klubova, klupski rasporedi i kupovi (HTML, jsoup) |
 | `rezultati.hns.team` | raspored A reprezentacije (HTML, jsoup) |
 | `match.uefa.com/v5/matches` | europske utakmice hrvatskih klubova (neslužbeni JSON) |
 

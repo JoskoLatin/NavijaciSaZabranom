@@ -15,7 +15,10 @@ data class Utakmica(
     val stadion: String?,
     val rezultatDomacin: Int?,
     val rezultatGost: Int?,
-    /** Naziv natjecanja (npr. "Liga nacija") — popunjeno za reprezentaciju, null za klupski raspored. */
+    /**
+     * Naziv natjecanja (npr. "Liga nacija", "Hrvatski kup, 1/16 finala") — popunjeno za
+     * reprezentaciju, kup i europske utakmice, null za prvenstvo.
+     */
     val natjecanje: String? = null,
 )
 

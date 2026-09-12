@@ -23,3 +23,18 @@ internal fun pronadjiPromjeneTermina(
         nova.datum >= danas && (nova.datum != stara.datum || nova.vrijeme != stara.vrijeme)
     }
 }
+
+/**
+ * Nadolazeće utakmice kojih nije bilo u starom cacheu — npr. nakon ždrijeba sljedeće
+ * runde kupa. Za razliku od rasporeda lige, u kojem je cijela sezona poznata unaprijed,
+ * u kupu se utakmica kluba pojavi tek kad se izvuče. Obje liste smiju sadržavati samo
+ * utakmice praćenog kluba, jer bi svaka tuđa utakmica inače izgledala kao nova.
+ */
+internal fun pronadjiNoveUtakmice(
+    stare: List<UtakmicaEntity>,
+    nove: List<UtakmicaEntity>,
+    danas: LocalDate,
+): List<UtakmicaEntity> {
+    val stariIds = stare.map { it.id }.toSet()
+    return nove.filter { it.id !in stariIds && it.datum >= danas }
+}

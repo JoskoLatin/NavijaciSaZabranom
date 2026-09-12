@@ -19,8 +19,14 @@ data class UtakmicaEntity(
     val stadion: String?,
     val rezultatDomacin: Int?,
     val rezultatGost: Int?,
-    /** Naziv natjecanja za europske utakmice (npr. "UEFA Konferencijska liga"); null za domaći raspored. */
+    /**
+     * Naziv natjecanja za kup i europske utakmice (npr. "Hrvatski kup, 1/16 finala",
+     * "UEFA Konferencijska liga"); null za domaći raspored.
+     */
     val natjecanje: String? = null,
-    /** Izvor podataka: "hns" (domaći raspored) ili "uefa" (europske utakmice) — zamjenjuju se neovisno. */
+    /**
+     * Izvor podataka: "hns" (domaći raspored), "uefa" (europske utakmice) ili "kup:<id>"
+     * (jedan kup) — svaki se zamjenjuje neovisno.
+     */
     val izvor: String = "hns",
 )

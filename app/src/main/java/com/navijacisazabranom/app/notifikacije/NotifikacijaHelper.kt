@@ -32,7 +32,10 @@ class NotifikacijaHelper @Inject constructor(
         context.getSystemService(NotificationManager::class.java)?.createNotificationChannel(kanal)
     }
 
-    /** Obavijest o objavi ili promjeni termina; jedna notifikacija i za više promjena odjednom. */
+    /**
+     * Obavijest o objavi ili promjeni termina (uključujući novoizvučene utakmice kupa);
+     * jedna notifikacija i za više promjena odjednom.
+     */
     fun prikaziPromjeneTermina(promjene: List<Utakmica>) {
         if (promjene.isEmpty()) return
 
@@ -40,14 +43,26 @@ class NotifikacijaHelper @Inject constructor(
         val tekst: String
         if (promjene.size == 1) {
             val utakmica = promjene.single()
+            val datumText = utakmica.datum.format(dateFormatter)
             val vrijemeText = utakmica.vrijeme?.format(timeFormatter)
                 ?: context.getString(R.string.raspored_satnica_tbd)
             naslov = context.getString(R.string.notifikacija_termin_naslov)
-            tekst = context.getString(
+            // Kup i europske utakmice nose natjecanje — bez njega bi utakmica kupa
+            // izgledala kao prvenstvena.
+            tekst = utakmica.natjecanje?.let { natjecanje ->
+                context.getString(
+                    R.string.notifikacija_termin_tekst_natjecanje,
+                    utakmica.domacinNaziv,
+                    utakmica.gostNaziv,
+                    natjecanje,
+                    datumText,
+                    vrijemeText,
+                )
+            } ?: context.getString(
                 R.string.notifikacija_termin_tekst,
                 utakmica.domacinNaziv,
                 utakmica.gostNaziv,
-                utakmica.datum.format(dateFormatter),
+                datumText,
                 vrijemeText,
             )
         } else {

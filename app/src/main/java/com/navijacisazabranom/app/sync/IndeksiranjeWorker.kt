@@ -9,10 +9,13 @@ import com.navijacisazabranom.app.data.hns.IndeksStanje
 import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Jednokratna izgradnja (ili mjesečno osvježavanje) indeksa svih seniorskih
- * klubova. Repository preskače svježe lige, pa retry nastavlja gdje je stao.
+ * klubova, uz tjedno osvježavanje sudionika kupova. Repository preskače
+ * svježe lige i kupove, pa retry nastavlja gdje je stao.
  */
 @HiltWorker
 class IndeksiranjeWorker @AssistedInject constructor(
@@ -22,8 +25,10 @@ class IndeksiranjeWorker @AssistedInject constructor(
     private val indeksStanje: IndeksStanje,
 ) : CoroutineWorker(context, params) {
 
-    override suspend fun doWork(): Result {
-        if (!klubIndeksRepository.indeksZastario()) return Result.success()
+    // Periodični i jednokratni posao mogu se poklopiti (npr. prva izgradnja i pokretanje
+    // aplikacije); drugi pričeka prvog i zatim zatekne svjež indeks, bez dvostrukog dohvata.
+    override suspend fun doWork(): Result = IZGRADNJA.withLock {
+        if (!klubIndeksRepository.indeksZastario()) return@withLock Result.success()
 
         indeksStanje.postavi(obradjeno = 0, ukupno = 0)
         val rezultat = klubIndeksRepository.izgradiIndeks { obradjeno, ukupno ->
@@ -31,7 +36,7 @@ class IndeksiranjeWorker @AssistedInject constructor(
         }
         indeksStanje.zavrsi()
 
-        return rezultat.fold(
+        rezultat.fold(
             onSuccess = { Result.success() },
             onFailure = { e ->
                 Log.w(TAG, "Izgradnja indeksa klubova neuspješna, pokušat će se ponovno", e)
@@ -43,5 +48,7 @@ class IndeksiranjeWorker @AssistedInject constructor(
     private companion object {
         const val TAG = "IndeksiranjeWorker"
         const val MAX_POKUSAJA = 3
+
+        val IZGRADNJA = Mutex()
     }
 }

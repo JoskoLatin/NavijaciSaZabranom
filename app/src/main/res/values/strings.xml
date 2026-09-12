@@ -64,7 +64,7 @@
     <string name="profilna_greska">Slika se nije mogla spremiti.</string>
 
     <string name="kalendar_sezona_gumb">Dodaj sve termine u kalendar</string>
-    <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte sve termine u kalendar — utakmice svog kluba (domaće i europske) i utakmice reprezentacije. Podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>
+    <string name="kalendar_sezona_opis">Za pouzdano alarmiranje dodajte sve termine u kalendar — utakmice svog kluba (prvenstvo, kup i europske) i utakmice reprezentacije. Podsjetnike tada drži kalendar, neovisno o tome gasi li sustav aplikaciju u pozadini.</string>
     <string name="kalendar_dodano">Dodano %1$d termina u kalendar.</string>
     <string name="kalendar_nema_novih">Svi termini su već u kalendaru.</string>
     <string name="kalendar_svi_dodani">Svi termini su dodani u kalendar.</string>
@@ -74,17 +74,17 @@
 
     <string name="upute_naslov">Kako koristiti aplikaciju</string>
     <string name="upute_svrha_naslov">Svrha aplikacije</string>
-    <string name="upute_svrha_tekst">Aplikacija podsjeća na obvezu javljanja nadležnoj policijskoj postaji na dan utakmice vašeg kluba. Zabrana u pravilu vrijedi i za europske utakmice, pa su i one u rasporedu, a u kalendar se mogu upisati i utakmice reprezentacije.</string>
+    <string name="upute_svrha_tekst">Aplikacija podsjeća na obvezu javljanja nadležnoj policijskoj postaji na dan utakmice vašeg kluba. Zabrana u pravilu vrijedi i za utakmice kupa i europske utakmice, pa su i one u rasporedu, a u kalendar se mogu upisati i utakmice reprezentacije.</string>
     <string name="upute_zasto_naslov">Zašto termine držati u kalendaru</string>
     <string name="upute_zasto_tekst">Podsjetnici iz aplikacije mogu izostati ako sustav ugasi aplikaciju u pozadini (osobito na Xiaomi/MIUI uređajima). Kalendar okida podsjetnike pouzdano, pa je najsigurnije termine imati i ondje.</string>
     <string name="upute_kako_naslov">Kako dodati termine</string>
-    <string name="upute_kako_tekst">Na kartici Klub pritisnite „Dodaj sve termine u kalendar" i dopustite pristup kalendaru. Odjednom se upisuju svi nadolazeći termini — utakmice vašeg kluba (domaće i europske) i utakmice reprezentacije. Ponovni pritisak ne stvara duplikate.</string>
+    <string name="upute_kako_tekst">Na kartici Klub pritisnite „Dodaj sve termine u kalendar" i dopustite pristup kalendaru. Odjednom se upisuju svi nadolazeći termini — utakmice vašeg kluba (prvenstvo, kup i europske) i utakmice reprezentacije. Ponovni pritisak ne stvara duplikate.</string>
     <string name="upute_sat_naslov">Kada stiže podsjetnik</string>
     <string name="upute_sat_tekst">Termin se upisuje s podsjetnikom u 9 ujutro na dan utakmice, bez obzira na to kada utakmica počinje — da imate cijeli dan za javljanje. Ako satnica još nije objavljena, termin se upisuje kao cjelodnevni, pa točno vrijeme provjerite u rasporedu bliže utakmici.</string>
     <string name="upute_podsjetnik_naslov">Vlastiti podsjetnici</string>
     <string name="upute_podsjetnik_tekst">Želite li još koji podsjetnik, otvorite termin u aplikaciji kalendara i dodajte ga — npr. dan prije. Podsjetnik u 9 ujutro pritom ostaje.</string>
     <string name="upute_novi_naslov">Novi i promijenjeni termini</string>
-    <string name="upute_novi_tekst">Kad se objave novi termini (npr. nakon europskog ždrijeba) ili se promijeni satnica, na kartici Klub pojavit će se poruka da ih možete dodati. Isto vrijedi ako neki termin obrišete u kalendaru — aplikacija to primijeti i ponudi ga ponovno.</string>
+    <string name="upute_novi_tekst">Kad se objave novi termini (npr. nakon ždrijeba kupa ili europskih natjecanja) ili se promijeni satnica, na kartici Klub pojavit će se poruka da ih možete dodati. Isto vrijedi ako neki termin obrišete u kalendaru — aplikacija to primijeti i ponudi ga ponovno. O promijenjenoj satnici i novoj utakmici u kupu stiže i obavijest.</string>
     <string name="upute_klub_naslov">Promjena kluba</string>
     <string name="upute_klub_tekst">Klub mijenjate na kartici Klub, gumbom „Promijeni". Termini koje ste dotad upisali ostaju u kalendaru — ako ih više ne trebate, obrišite ih u aplikaciji kalendara.</string>
     <string name="upute_pouzdanost_naslov">Podsjetnici iz aplikacije</string>
@@ -130,10 +130,11 @@
     <string name="notifikacija_vecer_prije_tekst">Podsjetnik unaprijed: sutra igra vaš klub. Ne zaboravite obvezu javljanja nadležnoj policijskoj postaji.</string>
     <string name="notifikacija_termin_naslov">Novi termin utakmice</string>
     <string name="notifikacija_termin_tekst">%1$s — %2$s: %3$s, %4$s.</string>
+    <string name="notifikacija_termin_tekst_natjecanje">%1$s — %2$s (%3$s): %4$s, %5$s.</string>
     <string name="notifikacija_termin_vise_naslov">Novi termini utakmica</string>
     <plurals name="notifikacija_termin_vise_tekst">
-        <item quantity="one">Promijenjen je termin za %1$d utakmicu vašeg kluba. Otvorite raspored za detalje.</item>
-        <item quantity="few">Promijenjeni su termini za %1$d utakmice vašeg kluba. Otvorite raspored za detalje.</item>
-        <item quantity="other">Promijenjeni su termini za %1$d utakmica vašeg kluba. Otvorite raspored za detalje.</item>
+        <item quantity="one">Objavljen je novi ili promijenjen termin za %1$d utakmicu vašeg kluba. Otvorite raspored za detalje.</item>
+        <item quantity="few">Objavljeni su novi ili promijenjeni termini za %1$d utakmice vašeg kluba. Otvorite raspored za detalje.</item>
+        <item quantity="other">Objavljeni su novi ili promijenjeni termini za %1$d utakmica vašeg kluba. Otvorite raspored za detalje.</item>
     </plurals>
 </resources>

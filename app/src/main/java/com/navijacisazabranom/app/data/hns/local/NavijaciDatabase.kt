@@ -10,8 +10,10 @@ import androidx.room.TypeConverters
         UtakmicaEntity::class,
         KlubIndeksEntity::class,
         IndeksiranaLigaEntity::class,
+        KupEntity::class,
+        KupSudionikEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 @TypeConverters(RoomConverters::class)
@@ -19,4 +21,5 @@ abstract class NavijaciDatabase : RoomDatabase() {
     abstract fun praceniKlubDao(): PraceniKlubDao
     abstract fun utakmicaDao(): UtakmicaDao
     abstract fun klubIndeksDao(): KlubIndeksDao
+    abstract fun kupDao(): KupDao
 }

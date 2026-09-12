@@ -44,6 +44,20 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[INDEKS_VERZIJA] = verzija }
     }
 
+    override suspend fun getPregledKupova(): Long =
+        context.postavkeDataStore.data.map { it[PREGLED_KUPOVA] ?: 0L }.first()
+
+    override suspend fun postaviPregledKupova(vrijeme: Long) {
+        context.postavkeDataStore.edit { it[PREGLED_KUPOVA] = vrijeme }
+    }
+
+    override suspend fun getKupoviKlubId(): String? =
+        context.postavkeDataStore.data.map { it[KUPOVI_KLUB_ID] }.first()
+
+    override suspend fun postaviKupoviKlubId(klubId: String) {
+        context.postavkeDataStore.edit { it[KUPOVI_KLUB_ID] = klubId }
+    }
+
     override fun observeHnsNaopako(): Flow<Boolean> =
         context.postavkeDataStore.data.map { it[HNS_NAOPAKO] ?: false }
 
@@ -99,6 +113,8 @@ class DataStorePostavkeRepository @Inject constructor(
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
         val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
         val INDEKS_VERZIJA = intPreferencesKey("indeks_verzija")
+        val PREGLED_KUPOVA = longPreferencesKey("pregled_kupova")
+        val KUPOVI_KLUB_ID = stringPreferencesKey("kupovi_klub_id")
         val HNS_NAOPAKO = booleanPreferencesKey("hns_naopako")
         val ZADNJA_NOTIFICIRANA = stringPreferencesKey("zadnja_notificirana_utakmica")
         val U_KALENDARU = stringSetPreferencesKey("utakmice_u_kalendaru")

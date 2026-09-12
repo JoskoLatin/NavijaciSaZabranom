@@ -18,6 +18,7 @@ class HnsNatjecanjeRepository @Inject constructor() : NatjecanjeRepository {
                 NatjecanjeStranica(
                     klubovi = HnsMatchParser.parseKlubovi(document),
                     utakmice = HnsMatchParser.parseUtakmice(document),
+                    runde = HnsMatchParser.parseRunde(document),
                 )
             }
         }

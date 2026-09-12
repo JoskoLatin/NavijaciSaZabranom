@@ -28,8 +28,23 @@ object HnsMatchParser {
      */
     private const val SCOPE_REPREZENTACIJA = "li.row[data-match]"
 
+    /** Zaglavlja rundi u istom kontejneru kao klupski raspored. */
+    private const val SCOPE_RUNDE = "div.competition_results_scorers_cards li.header[data-round]"
+
     fun parseUtakmice(document: Document): List<Utakmica> =
         parseRedove(document.select(SCOPE_KLUB))
+
+    /**
+     * Naziv runde po data-round ključu ("1. kolo", "1/16 finala"). Kup umjesto
+     * kola ima kodove runde (10002, 10003...), pa se naziv čita iz zaglavlja.
+     * Uz naziv zaglavlje sadrži i strelice za listanje, pa se uzima samo vlastiti tekst.
+     */
+    fun parseRunde(document: Document): Map<Int, String> =
+        document.select(SCOPE_RUNDE).mapNotNull { header ->
+            val runda = header.attr("data-round").toIntOrNull() ?: return@mapNotNull null
+            val naziv = header.selectFirst("div")?.ownText()?.trim().orEmpty()
+            if (naziv.isBlank()) null else runda to naziv
+        }.toMap()
 
     fun parseReprezentacija(document: Document): List<Utakmica> =
         parseRedove(document.select(SCOPE_REPREZENTACIJA))

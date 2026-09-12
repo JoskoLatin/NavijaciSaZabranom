@@ -16,6 +16,17 @@ interface PostavkeRepository {
     suspend fun getIndeksVerzija(): Int
     suspend fun postaviIndeksVerzija(verzija: Int)
 
+    /** Vrijeme zadnjeg pregleda kupova i njihovih sudionika (0 = nikad). */
+    suspend fun getPregledKupova(): Long
+    suspend fun postaviPregledKupova(vrijeme: Long)
+
+    /**
+     * Klub čije su utakmice kupa zadnje dohvaćene (null = još nijedan). Nakon promjene
+     * kluba njegove već izvučene utakmice kupa nisu "nove", pa se o njima ne javlja.
+     */
+    suspend fun getKupoviKlubId(): String?
+    suspend fun postaviKupoviKlubId(klubId: String)
+
     /** Je li HNS logo okrenut naopako (easter egg triple-tap); trajno se pamti. */
     fun observeHnsNaopako(): Flow<Boolean>
     suspend fun preokreniHnsLogo()

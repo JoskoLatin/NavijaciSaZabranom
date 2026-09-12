@@ -47,10 +47,24 @@ object DatabaseModule {
         }
     }
 
+    private val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `kup` (" +
+                    "`natjecanjeId` TEXT NOT NULL, `naziv` TEXT NOT NULL, `savezId` TEXT NOT NULL, " +
+                    "`sezona` TEXT NOT NULL, `azurirano` INTEGER NOT NULL, PRIMARY KEY(`natjecanjeId`))",
+            )
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `kup_sudionik` (" +
+                    "`kupId` TEXT NOT NULL, `klubId` TEXT NOT NULL, PRIMARY KEY(`kupId`, `klubId`))",
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): NavijaciDatabase =
         Room.databaseBuilder(context, NavijaciDatabase::class.java, "navijaci.db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
 }

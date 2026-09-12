@@ -3,8 +3,10 @@ package com.navijacisazabranom.app.di
 import com.navijacisazabranom.app.data.hns.DirectoryRepository
 import com.navijacisazabranom.app.data.hns.HnsDirectoryRepository
 import com.navijacisazabranom.app.data.hns.HnsKlubIndeksRepository
+import com.navijacisazabranom.app.data.hns.HnsKupRepository
 import com.navijacisazabranom.app.data.hns.HnsNatjecanjeRepository
 import com.navijacisazabranom.app.data.hns.KlubIndeksRepository
+import com.navijacisazabranom.app.data.hns.KupRepository
 import com.navijacisazabranom.app.data.hns.EuropskiRepository
 import com.navijacisazabranom.app.data.hns.HnsReprezentacijaRepository
 import com.navijacisazabranom.app.data.hns.NatjecanjeRepository
@@ -45,4 +47,8 @@ abstract class CompetitionModule {
     @Binds
     @Singleton
     abstract fun bindEuropskiRepository(impl: UefaEuropskiRepository): EuropskiRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindKupRepository(impl: HnsKupRepository): KupRepository
 }

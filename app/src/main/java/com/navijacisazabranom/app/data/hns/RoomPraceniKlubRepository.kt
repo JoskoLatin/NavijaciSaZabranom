@@ -17,6 +17,7 @@ class RoomPraceniKlubRepository @Inject constructor(
     private val database: NavijaciDatabase,
     private val natjecanjeRepository: NatjecanjeRepository,
     private val europskiRepository: EuropskiRepository,
+    private val kupRepository: KupRepository,
     private val alarmScheduler: AlarmScheduler,
     private val postavkeRepository: PostavkeRepository,
     private val notifikacijaHelper: NotifikacijaHelper,
@@ -51,10 +52,22 @@ class RoomPraceniKlubRepository @Inject constructor(
 
     override suspend fun osvjeziUtakmice(natjecanjeId: String): Result<Unit> =
         natjecanjeRepository.getNatjecanjeStranica(natjecanjeId).map { stranica ->
-            val nove = stranica.utakmice.map { it.toEntity(natjecanjeId, "hns") }
-            prijaviPromjeneTermina(natjecanjeId, nove)
-            database.utakmicaDao().zamijeniZaNatjecanje(natjecanjeId, nove, "hns")
+            val praceniKlub = database.praceniKlubDao().get()?.takeIf { it.natjecanjeId == natjecanjeId }
+            // Stanje prije osvježavanja — s njim se uspoređuju novi i promijenjeni termini.
+            val stare = praceniKlub?.let { database.utakmicaDao().getZaKlub(natjecanjeId, it.klubId) }.orEmpty()
+
+            val nove = stranica.utakmice.map { it.toEntity(natjecanjeId, IZVOR_HNS) }
+            database.utakmicaDao().zamijeniZaNatjecanje(natjecanjeId, nove, IZVOR_HNS)
             osvjeziEuropske(natjecanjeId)
+            if (praceniKlub != null) {
+                // Nakon promjene kluba njegove već izvučene utakmice kupa nisu "nove".
+                // Bez zapisa (prvi dohvat kupova nakon ažuriranja aplikacije) vrijede kao nove.
+                val kupoviPoznati = postavkeRepository.getKupoviKlubId()
+                    ?.let { it == praceniKlub.klubId } ?: true
+                val kupovi = osvjeziKupove(praceniKlub)
+                if (kupovi.sviDohvaceni) postavkeRepository.postaviKupoviKlubId(praceniKlub.klubId)
+                prijaviPromjeneTermina(stare, nove, kupovi.utakmice, javiNoveUKupu = kupoviPoznati)
+            }
             zakaziNotifikacijeAkoPraceni(natjecanjeId)
         }
 
@@ -72,23 +85,64 @@ class RoomPraceniKlubRepository @Inject constructor(
             .onSuccess { europske ->
                 database.utakmicaDao().zamijeniZaNatjecanje(
                     natjecanjeId,
-                    europske.map { it.toEntity(natjecanjeId, "uefa") },
-                    "uefa",
+                    europske.map { it.toEntity(natjecanjeId, IZVOR_UEFA) },
+                    IZVOR_UEFA,
                 )
             }
             .onFailure { Log.w(TAG, "Dohvat europskih utakmica nije uspio", it) }
     }
 
-    private suspend fun prijaviPromjeneTermina(natjecanjeId: String, nove: List<UtakmicaEntity>) {
-        val praceniKlub = database.praceniKlubDao().get() ?: return
-        if (praceniKlub.natjecanjeId != natjecanjeId) return
+    /**
+     * Utakmice kluba u kupovima (Hrvatski kup i kupovi saveza) spremaju se uz domaći
+     * raspored, svaki kup kao zaseban izvor ("kup:<id>"), pa neuspjeh jednog kupa ne
+     * briše utakmice ostalih. Neuspjeh se samo logira, kao kod europskih. Vraća
+     * svježe dohvaćene utakmice, za usporedbu sa stanjem prije osvježavanja.
+     */
+    private suspend fun osvjeziKupove(praceniKlub: PraceniKlubEntity): OsvjezeniKupovi {
+        val nove = mutableListOf<UtakmicaEntity>()
+        var sviDohvaceni = true
+        for (kup in kupRepository.kupoviZaKlub(praceniKlub.klubId)) {
+            val izvor = IZVOR_KUP + kup.id
+            kupRepository.getUtakmiceKluba(kup, praceniKlub.klubId)
+                .onSuccess { utakmice ->
+                    val entiteti = utakmice.map { it.toEntity(praceniKlub.natjecanjeId, izvor) }
+                    database.utakmicaDao().zamijeniZaNatjecanje(praceniKlub.natjecanjeId, entiteti, izvor)
+                    nove += entiteti
+                }
+                .onFailure {
+                    sviDohvaceni = false
+                    Log.w(TAG, "Dohvat kupa ${kup.naziv} nije uspio", it)
+                }
+        }
+        return OsvjezeniKupovi(nove, sviDohvaceni)
+    }
 
-        // Usporedba samo domaćeg izvora — europske se osvježavaju zasebno.
-        val stare = database.utakmicaDao().getZaKlub(natjecanjeId, praceniKlub.klubId)
-            .filter { it.izvor == "hns" }
-        val promjene = pronadjiPromjeneTermina(stare, nove, LocalDate.now())
+    /**
+     * Jedna obavijest za sve: pomaknute termine prvenstva i kupa te novoizvučene
+     * utakmice kupa (europske se ne uspoređuju). Prazan cache znači prvi dohvat nakon
+     * odabira kluba — tada bi sve izgledalo novo, pa se ne javlja ništa.
+     */
+    private fun prijaviPromjeneTermina(
+        stare: List<UtakmicaEntity>,
+        noveDomace: List<UtakmicaEntity>,
+        noveKupova: List<UtakmicaEntity>,
+        javiNoveUKupu: Boolean,
+    ) {
+        if (stare.isEmpty()) return
+
+        val danas = LocalDate.now()
+        val stareKupova = stare.filter { it.izvor.startsWith(IZVOR_KUP) }
+        val promjene = pronadjiPromjeneTermina(stare.filter { it.izvor == IZVOR_HNS }, noveDomace, danas) +
+            pronadjiPromjeneTermina(stareKupova, noveKupova, danas) +
+            (if (javiNoveUKupu) pronadjiNoveUtakmice(stareKupova, noveKupova, danas) else emptyList())
         notifikacijaHelper.prikaziPromjeneTermina(promjene.map { it.toDomain() })
     }
+
+    private class OsvjezeniKupovi(
+        val utakmice: List<UtakmicaEntity>,
+        /** Svi kupovi kluba dohvaćeni bez greške — tek tada su njegove utakmice kupa u cacheu potpune. */
+        val sviDohvaceni: Boolean,
+    )
 
     override suspend fun ponovnoZakaziNotifikacije() {
         val praceniKlub = database.praceniKlubDao().get() ?: return
@@ -165,5 +219,11 @@ class RoomPraceniKlubRepository @Inject constructor(
     private companion object {
         const val TAG = "PraceniKlubRepo"
         const val JUTARNJI_SAT = 9
+
+        const val IZVOR_HNS = "hns"
+        const val IZVOR_UEFA = "uefa"
+
+        /** Prefiks izvora za kupove; iza njega dolazi id kupa. */
+        const val IZVOR_KUP = "kup:"
     }
 }

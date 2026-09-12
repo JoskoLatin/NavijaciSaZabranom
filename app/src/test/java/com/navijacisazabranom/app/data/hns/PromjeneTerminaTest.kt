@@ -115,4 +115,41 @@ class PromjeneTerminaTest {
 
         assertEquals(listOf(nova1, nova2), promjene)
     }
+
+    @Test
+    fun `novoizvucena utakmica kupa se detektira`() {
+        val odigrana = testUtakmica(id = "1", datum = danas.minusDays(3), vrijeme = LocalTime.of(16, 30))
+        val izvucena = testUtakmica(id = "2", datum = danas.plusDays(20), vrijeme = null)
+
+        val nove = pronadjiNoveUtakmice(listOf(odigrana), listOf(odigrana.copy(), izvucena), danas)
+
+        assertEquals(listOf(izvucena), nove)
+    }
+
+    @Test
+    fun `prva utakmica kupa je nova i kad u kupu jos nije bilo utakmica`() {
+        val izvucena = testUtakmica(id = "1", datum = danas.plusDays(4), vrijeme = LocalTime.of(16, 30))
+
+        val nove = pronadjiNoveUtakmice(emptyList(), listOf(izvucena), danas)
+
+        assertEquals(listOf(izvucena), nove)
+    }
+
+    @Test
+    fun `vec poznata utakmica nije nova ni kad joj se promijeni termin`() {
+        val stara = testUtakmica(id = "1", datum = danas.plusDays(5), vrijeme = null)
+
+        val nove = pronadjiNoveUtakmice(listOf(stara), listOf(stara.copy(vrijeme = LocalTime.of(18, 0))), danas)
+
+        assertTrue(nove.isEmpty())
+    }
+
+    @Test
+    fun `nova ali vec odigrana utakmica se ne javlja`() {
+        val odigrana = testUtakmica(id = "1", datum = danas.minusDays(2), vrijeme = LocalTime.of(16, 30))
+
+        val nove = pronadjiNoveUtakmice(emptyList(), listOf(odigrana), danas)
+
+        assertTrue(nove.isEmpty())
+    }
 }

@@ -189,8 +189,10 @@ private fun SljedecaUtakmicaKartica(
             } else {
                 val vrijemeText = sljedeca.vrijeme?.format(timeFormatter)
                     ?: stringResource(R.string.raspored_satnica_tbd)
+                val terminText = "${sljedeca.datum.format(dateFormatter)} $vrijemeText"
+                // Utakmica kupa ili europska nosi natjecanje; prvenstvena ide bez oznake.
                 Text(
-                    text = "${sljedeca.datum.format(dateFormatter)} $vrijemeText",
+                    text = sljedeca.natjecanje?.let { "$it · $terminText" } ?: terminText,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 6.dp),

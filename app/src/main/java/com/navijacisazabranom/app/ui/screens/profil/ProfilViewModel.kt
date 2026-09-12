@@ -36,7 +36,7 @@ data class ProfilUiState(
     val sljedeca: Utakmica? = null,
     val hnsNaopako: Boolean = false,
     val email: String? = null,
-    /** Sve nadolazeće utakmice (domaće + europske), kronološki. */
+    /** Sve nadolazeće utakmice (prvenstvo, kup i europske), kronološki. */
     val nadolazece: List<Utakmica> = emptyList(),
     /** Nadolazeće utakmice reprezentacije — u kalendar idu skupa s klupskima. */
     val reprezentacija: List<Utakmica> = emptyList(),

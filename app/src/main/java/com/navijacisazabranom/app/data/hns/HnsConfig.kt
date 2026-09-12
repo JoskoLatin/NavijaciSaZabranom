@@ -7,6 +7,9 @@ internal object HnsConfig {
     const val USER_AGENT = "Mozilla/5.0 (Android) NavijaciSaZabranom/1.0"
     const val CONNECT_TIMEOUT_MS = 15_000
 
+    /** Hrvatski nogometni savez u imeniku semafora; njegov kup je Hrvatski nogometni kup. */
+    const val HNS_SAVEZ_ID = "1"
+
     /** Puni raspored A reprezentacije; ista platforma kao semafor, cid=FC A (muška A). */
     const val REPREZENTACIJA_URL = "https://rezultati.hns.team/"
     const val REPREZENTACIJA_CID = "FC A"
