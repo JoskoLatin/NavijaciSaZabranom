@@ -31,8 +31,8 @@ android {
         applicationId = "com.navijacisazabranom.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 10
-        versionName = "1.2"
+        versionCode = 11
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

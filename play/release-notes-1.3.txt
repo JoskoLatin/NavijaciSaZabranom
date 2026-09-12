@@ -1,0 +1,5 @@
+Novo u verziji 1.3:
+
+• Utakmice kupa – raspored sada uključuje Hrvatski nogometni kup i županijske kupove, jer obveza javljanja vrijedi i za njih.
+• Kad se nakon ždrijeba pojavi nova utakmica kupa, stiže obavijest, a termin se može dodati u kalendar.
+• Na kartici sljedeće utakmice i u rasporedu piše natjecanje i runda, npr. „Hrvatski kup, 1/16 finala".
