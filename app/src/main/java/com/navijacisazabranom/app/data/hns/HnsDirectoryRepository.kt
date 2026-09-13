@@ -30,6 +30,23 @@ class HnsDirectoryRepository @Inject constructor() : DirectoryRepository {
             }
         }
 
+    override suspend fun getNatjecanjaKluba(klubId: String, sezona: String): Result<List<Natjecanje>> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                // Isti handler kao imenik po savezu, ali u obliku koji semafor koristi na
+                // stranici kluba (linkType=club_profile). Bez uzrasta vraća i mlađe kategorije.
+                val json = fetchJson("${HnsConfig.BASE_URL}/handlers/getCompetitions/") { connection ->
+                    connection
+                        .data("season", sezona)
+                        .data("clubID", klubId)
+                        .data("acat", HnsConfig.SENIORSKI_UZRAST)
+                        .data("linkType", "club_profile")
+                        .data("linkConstructor", "/natjecanja/{cid}/{cname}/")
+                }
+                HnsDirectoryParser.parseNatjecanja(json)
+            }
+        }
+
     private fun fetchJson(url: String, extraParams: (org.jsoup.Connection) -> org.jsoup.Connection): String =
         extraParams(
             Jsoup.connect(url)

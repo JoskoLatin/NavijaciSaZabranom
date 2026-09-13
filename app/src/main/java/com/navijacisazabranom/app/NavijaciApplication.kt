@@ -24,6 +24,5 @@ class NavijaciApplication : Application(), Configuration.Provider {
         val workManager = WorkManager.getInstance(this)
         SinkronizacijaScheduler.zakazi(workManager)
         IndeksiranjeScheduler.zakazi(workManager)
-        IndeksiranjeScheduler.dopuniOdmah(workManager)
     }
 }

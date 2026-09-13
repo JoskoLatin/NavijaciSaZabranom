@@ -8,15 +8,14 @@ interface KlubIndeksRepository {
 
     fun observeBrojKlubova(): Flow<Int>
 
-    /** Indeks je prazan ili stariji od mjesec dana, ili je popis sudionika kupova stariji od tjedan dana. */
+    /** Indeks je prazan ili stariji od mjesec dana. */
     suspend fun indeksZastario(): Boolean
 
     /**
      * Gradi indeks svih seniorskih klubova: enumerira saveze (najnovija
      * dostupna sezona po savezu), filtrira seniorske lige i za svaku dohvaća
-     * popis klubova. Usput za seniorske kupove tekuće sezone bilježi koji klubovi
-     * u njima igraju. Već svježe indeksirane lige i kupovi se preskaču, pa je
-     * poziv siguran za ponavljanje i nastavlja prekinuti posao.
+     * popis klubova. Već svježe indeksirane lige se preskaču, pa je poziv
+     * siguran za ponavljanje i nastavlja prekinuti posao.
      */
     suspend fun izgradiIndeks(napredak: (obradjeno: Int, ukupno: Int) -> Unit): Result<Unit>
 }

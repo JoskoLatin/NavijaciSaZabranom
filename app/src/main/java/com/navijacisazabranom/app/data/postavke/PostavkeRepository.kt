@@ -16,9 +16,10 @@ interface PostavkeRepository {
     suspend fun getIndeksVerzija(): Int
     suspend fun postaviIndeksVerzija(verzija: Int)
 
-    /** Vrijeme zadnjeg pregleda kupova i njihovih sudionika (0 = nikad). */
-    suspend fun getPregledKupova(): Long
-    suspend fun postaviPregledKupova(vrijeme: Long)
+    /** Id-evi Hrvatskog kupa u sezoni; nazivi nisu pouzdani jer ih kupovi saveza ponavljaju. */
+    suspend fun getNacionalniKupSezona(): String?
+    suspend fun getNacionalniKupIds(): Set<String>
+    suspend fun postaviNacionalniKup(sezona: String, ids: Set<String>)
 
     /**
      * Klub čije su utakmice kupa zadnje dohvaćene (null = još nijedan). Nakon promjene

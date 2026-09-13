@@ -11,7 +11,6 @@ import androidx.room.TypeConverters
         KlubIndeksEntity::class,
         IndeksiranaLigaEntity::class,
         KupEntity::class,
-        KupSudionikEntity::class,
     ],
     version = 5,
     exportSchema = false,

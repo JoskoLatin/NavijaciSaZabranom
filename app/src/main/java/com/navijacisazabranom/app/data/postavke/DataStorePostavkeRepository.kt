@@ -44,11 +44,17 @@ class DataStorePostavkeRepository @Inject constructor(
         context.postavkeDataStore.edit { it[INDEKS_VERZIJA] = verzija }
     }
 
-    override suspend fun getPregledKupova(): Long =
-        context.postavkeDataStore.data.map { it[PREGLED_KUPOVA] ?: 0L }.first()
+    override suspend fun getNacionalniKupSezona(): String? =
+        context.postavkeDataStore.data.map { it[NACIONALNI_KUP_SEZONA] }.first()
 
-    override suspend fun postaviPregledKupova(vrijeme: Long) {
-        context.postavkeDataStore.edit { it[PREGLED_KUPOVA] = vrijeme }
+    override suspend fun getNacionalniKupIds(): Set<String> =
+        context.postavkeDataStore.data.map { it[NACIONALNI_KUP_IDS].orEmpty() }.first()
+
+    override suspend fun postaviNacionalniKup(sezona: String, ids: Set<String>) {
+        context.postavkeDataStore.edit {
+            it[NACIONALNI_KUP_SEZONA] = sezona
+            it[NACIONALNI_KUP_IDS] = ids
+        }
     }
 
     override suspend fun getKupoviKlubId(): String? =
@@ -113,7 +119,8 @@ class DataStorePostavkeRepository @Inject constructor(
         val VECERNJI_PODSJETNIK = booleanPreferencesKey("vecernji_podsjetnik")
         val KARTICA_POUZDANOSTI_ODBACENA = booleanPreferencesKey("kartica_pouzdanosti_odbacena")
         val INDEKS_VERZIJA = intPreferencesKey("indeks_verzija")
-        val PREGLED_KUPOVA = longPreferencesKey("pregled_kupova")
+        val NACIONALNI_KUP_SEZONA = stringPreferencesKey("nacionalni_kup_sezona")
+        val NACIONALNI_KUP_IDS = stringSetPreferencesKey("nacionalni_kup_ids")
         val KUPOVI_KLUB_ID = stringPreferencesKey("kupovi_klub_id")
         val HNS_NAOPAKO = booleanPreferencesKey("hns_naopako")
         val ZADNJA_NOTIFICIRANA = stringPreferencesKey("zadnja_notificirana_utakmica")

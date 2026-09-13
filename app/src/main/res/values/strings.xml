@@ -94,7 +94,7 @@
     <string name="upute_izvor_naslov">Izvorni kod i licenca</string>
     <string name="upute_izvor_tekst">Aplikacija je otvorenog koda, objavljena pod licencom GNU GPL v3. Pritisnite ovdje za pregled izvornog koda na GitHubu. Aplikacija nije povezana s HNS-om, UEFA-om ni bilo kojim klubom niti od njih odobrena; svi znakovi i grbovi vlasništvo su svojih nositelja.</string>
     <string name="upute_odgovornost_naslov">Važno</string>
-    <string name="upute_odgovornost_tekst">Aplikacija je pomoć u pamćenju, a ne službena obavijest ni zamjena za rješenje o zabrani. Rasporedi se preuzimaju s javnih izvora i mogu se promijeniti ili kasniti, pa termin prije javljanja provjerite i sami. Za obvezu javljanja i njezine uvjete mjerodavno je vaše rješenje i nadležna policijska postaja.</string>
+    <string name="upute_odgovornost_tekst">Aplikacija je pomoć u pamćenju, a ne službena obavijest ni zamjena za rješenje o zabrani. Rasporedi se preuzimaju s javnih izvora i mogu se promijeniti ili kasniti, pa termin prije javljanja provjerite i sami. Kup nekih županijskih saveza (splitsko-dalmatinskog, zadarskog, šibensko-kninskog i dubrovačko-neretvanskog) HNS ne objavljuje, pa te utakmice aplikacija ne može prikazati. Za obvezu javljanja i njezine uvjete mjerodavno je vaše rješenje i nadležna policijska postaja.</string>
     <string name="profil_reprezentacija">Raspored reprezentacije</string>
 
     <string name="reprezentacija_title">Raspored reprezentacije</string>

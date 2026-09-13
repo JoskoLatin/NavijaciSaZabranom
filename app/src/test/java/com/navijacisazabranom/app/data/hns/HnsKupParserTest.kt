@@ -83,12 +83,36 @@ class HnsKupParserTest {
 
     @Test
     fun `oznaka kupa u rasporedu`() {
-        val hrvatski = Kup(id = "114492931", naziv = "SuperSport HNK", savezId = HnsConfig.HNS_SAVEZ_ID)
-        val zupanijskiKup = Kup(id = "114669107", naziv = "KUP NSZŽ 26/27", savezId = "313")
+        val hrvatski = Kup(id = "114492931", naziv = "SuperSport HNK", jeNacionalni = true)
+        val zupanijski = Kup(id = "114669107", naziv = "KUP NSZŽ 26/27", jeNacionalni = false)
 
         assertEquals("Hrvatski kup, 1/16 finala", hrvatski.oznaka("1/16 finala"))
-        assertEquals("Županijski kup, 1/8 finala", zupanijskiKup.oznaka("1/8 finala"))
+        assertEquals("Županijski kup, 1/8 finala", zupanijski.oznaka("1/8 finala"))
         assertEquals("Hrvatski kup", hrvatski.oznaka(null))
+    }
+
+    @Test
+    fun `iz natjecanja kluba uzimaju se samo kupovi`() {
+        val natjecanja = HnsDirectoryParser.parseNatjecanja(
+            File("src/test/resources/competitions-klub-vrbovec-2026-27.json").readText(),
+        )
+        val kupovi = natjecanja.filter { SeniorskiFiltar.jeSeniorskiKup(it.naziv) }
+
+        // Vrbovec igra 4. NL (liga), Hrvatski kup i županijski kup.
+        assertEquals(3, natjecanja.size)
+        assertEquals(listOf("114492931", "114669107"), kupovi.map { it.id })
+    }
+
+    @Test
+    fun `zenski kup kluba sa zenskom ekipom se preskace`() {
+        val natjecanja = HnsDirectoryParser.parseNatjecanja(
+            File("src/test/resources/competitions-klub-vukovar-2026-27.json").readText(),
+        )
+        val kupovi = natjecanja.filter { SeniorskiFiltar.jeSeniorskiKup(it.naziv) }
+
+        // Vukovar 1991 ima i žensku ekipu pod istim id-em, pa mu popis nosi HNKŽ i Drugu HNLŽ.
+        assertTrue("Popis mora sadržavati ženski kup", natjecanja.any { it.naziv.startsWith("HNKŽ") })
+        assertEquals(listOf("114492931"), kupovi.map { it.id })
     }
 
     private companion object {

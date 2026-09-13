@@ -51,12 +51,9 @@ object DatabaseModule {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `kup` (" +
-                    "`natjecanjeId` TEXT NOT NULL, `naziv` TEXT NOT NULL, `savezId` TEXT NOT NULL, " +
-                    "`sezona` TEXT NOT NULL, `azurirano` INTEGER NOT NULL, PRIMARY KEY(`natjecanjeId`))",
-            )
-            db.execSQL(
-                "CREATE TABLE IF NOT EXISTS `kup_sudionik` (" +
-                    "`kupId` TEXT NOT NULL, `klubId` TEXT NOT NULL, PRIMARY KEY(`kupId`, `klubId`))",
+                    "`klubId` TEXT NOT NULL, `natjecanjeId` TEXT NOT NULL, `naziv` TEXT NOT NULL, " +
+                    "`sezona` TEXT NOT NULL, `nacionalni` INTEGER NOT NULL, " +
+                    "PRIMARY KEY(`klubId`, `natjecanjeId`))",
             )
         }
     }

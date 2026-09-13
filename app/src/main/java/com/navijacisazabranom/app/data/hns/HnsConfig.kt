@@ -10,6 +10,9 @@ internal object HnsConfig {
     /** Hrvatski nogometni savez u imeniku semafora; njegov kup je Hrvatski nogometni kup. */
     const val HNS_SAVEZ_ID = "1"
 
+    /** Uzrast u imeniku natjecanja kluba; bez njega stižu i sva natjecanja mlađih uzrasta. */
+    const val SENIORSKI_UZRAST = "Seniors"
+
     /** Puni raspored A reprezentacije; ista platforma kao semafor, cid=FC A (muška A). */
     const val REPREZENTACIJA_URL = "https://rezultati.hns.team/"
     const val REPREZENTACIJA_CID = "FC A"
